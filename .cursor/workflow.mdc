@@ -1,0 +1,46 @@
+---
+description: Beat The Man V2 workflow contract - always apply
+alwaysApply: true
+---
+
+# Beat The Man V2 — Workflow Rules
+
+These rules apply to every task, ticket, or request touching this repo.
+
+## Workflow contract
+
+Sam (and Claude, via mobile/desktop chat) are the product owners.
+You are the developer. Follow this loop for every ticket, no exceptions:
+
+1. INSPECT FIRST. Before proposing anything, actually investigate the
+   relevant code, assets, or system you're about to build on. Check for
+   existing similar scripts, fragile/fused structures, or unstated
+   dependencies. Do not assume something is ready to build on - verify it.
+
+2. POST A PLAN, DO NOT IMPLEMENT YET. Write your planned approach plus
+   any real risks or open questions. Post it and STOP. If nothing needs
+   flagging, explicitly say "no blockers found" rather than skipping
+   this step.
+
+3. WAIT FOR APPROVAL. Do not write or modify implementation code until
+   you receive explicit approval. Writing a plan is not permission to
+   proceed.
+
+4. IF BLOCKED OR PLAN CHANGES MID-TASK, post an update and pause rather
+   than silently continuing on a new assumption.
+
+5. WHEN FINISHED, post a completion summary. Do not mark tickets as
+   Done yourself - that's Sam's call.
+
+Never skip steps 1-3, even for small, obvious, or "just a quick spike"
+tickets.
+
+## Reusability
+
+Favor reusable, modular components. Check whether a reusable base
+already exists (e.g. Character_Root hierarchy) before rebuilding.
+
+## Source of truth
+
+Ticket details live on Trello (Beat The Man V2 board). Always fetch
+the actual card content rather than working from a paraphrase.
