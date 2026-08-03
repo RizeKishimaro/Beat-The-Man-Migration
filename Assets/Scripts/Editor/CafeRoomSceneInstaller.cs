@@ -100,10 +100,13 @@ public static class CafeRoomSceneInstaller
             var leaf = hinge.GetComponent<ShopDoorLeaf>();
             if (leaf == null)
                 leaf = hinge.gameObject.AddComponent<ShopDoorLeaf>();
-            leaf.openAngle = 90f;
-            leaf.openDirection = -1f; // opens outward for this model
-            leaf.swingSpeed = 120f;
-            leaf.contactPadding = 0.2f;
+            leaf.maxAngle = 90f;
+            leaf.maxAngularSpeed = 300f;
+            leaf.chaseStrength = 42f;
+            leaf.walkOpenFraction = 0.35f;
+            leaf.springStrength = 200f;
+            leaf.damping = 14f;
+            leaf.pushDamping = 6f;
         }
         else
         {

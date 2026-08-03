@@ -57,7 +57,8 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
-
 # Scrapped Town placeholder assets (fused/unusable, superseded by new room pipeline)
 /[Aa]ssets/[Aa]rt/[Tt]own/
 /[Aa]ssets/[Aa]rt/[Tt]own.meta
+# macOS
+.DS_Store
