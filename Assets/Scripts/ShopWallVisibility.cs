@@ -1,59 +1,87 @@
+using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 /// <summary>
-/// Hides the shop's exterior walls while the player is inside the building,
-/// so the isometric camera can see the interior. Attach to the interior
-/// trigger volume (needs a Collider defining the interior bounds) and assign
-/// the wall renderer(s) to hide.
-///
-/// Checks the player's position against the interior bounds every frame
-/// rather than relying on Unity's OnTrigger messages, since CharacterController
-/// vs. static trigger colliders can be unreliable depending on Rigidbody setup.
+/// Legacy scene component. At runtime it bootstraps BuildingInteriorVisibility
+/// (shader height-clip strip) so older scene instances that still serialize this
+/// type pick up the dollhouse cutaway without requiring a scene re-wire.
 /// </summary>
 [RequireComponent(typeof(Collider))]
 public class ShopWallVisibility : MonoBehaviour
 {
-    [Tooltip("Renderers to hide while the player is inside (e.g. the ShopWalls mesh renderer).")]
+    [Tooltip("Unused when BuildingInteriorVisibility takes over; kept for serialization.")]
     public Renderer[] wallRenderers;
 
     [Tooltip("Optional explicit interior volume. If left empty, uses this GameObject's own Collider.")]
     public Collider interiorVolume;
 
-    private Transform player;
-    private bool wallsHidden;
-
-    private void Start()
+    private void Awake()
     {
-        if (interiorVolume == null)
-            interiorVolume = GetComponent<Collider>();
-
-        PlayerController pc = FindObjectOfType<PlayerController>();
-        if (pc != null)
-            player = pc.transform;
-    }
-
-    private void Update()
-    {
-        if (player == null || interiorVolume == null)
-            return;
-
-        bool inside = interiorVolume.bounds.Contains(player.position);
-        if (inside != wallsHidden)
+        BuildingInteriorVisibility existing = GetComponent<BuildingInteriorVisibility>();
+        if (existing != null)
         {
-            wallsHidden = inside;
-            SetWallsVisible(!inside);
-        }
-    }
-
-    private void SetWallsVisible(bool visible)
-    {
-        if (wallRenderers == null)
+            enabled = false;
             return;
-
-        for (int i = 0; i < wallRenderers.Length; i++)
-        {
-            if (wallRenderers[i] != null)
-                wallRenderers[i].enabled = visible;
         }
+
+        BuildingInteriorVisibility vis = gameObject.AddComponent<BuildingInteriorVisibility>();
+        Collider volume = interiorVolume != null ? interiorVolume : GetComponent<Collider>();
+        vis.interiorVolume = volume;
+        vis.stripHeight = 0.3f;
+
+        Transform cafe = transform.parent != null ? transform.parent : transform;
+        var always = new List<Renderer>();
+        var cullable = new List<Renderer>();
+        var roofs = new List<Renderer>();
+        var floors = new List<Renderer>();
+        Renderer wallBack = null;
+
+        foreach (Transform t in cafe.GetComponentsInChildren<Transform>(true))
+        {
+            Renderer r = t.GetComponent<Renderer>();
+            if (r == null)
+                continue;
+            string n = t.name;
+            if (n == "Wall_Back")
+                wallBack = r;
+            else if (n.StartsWith("Wall_Front") || n == "Wall_Left" || n == "Wall_Right")
+                cullable.Add(r);
+            else if (n == "RoomCeiling")
+                roofs.Add(r);
+            else if (n == "RoomFloor")
+                floors.Add(r);
+        }
+
+        vis.alwaysVisibleWalls = always.ToArray(); // empty — Wall_Back outside strip system
+        vis.cullableWalls = cullable.ToArray();
+        vis.roofRenderers = roofs.ToArray();
+        vis.floorRenderers = floors.ToArray();
+
+#if UNITY_EDITOR
+        if (vis.wallStripMaterial == null)
+            vis.wallStripMaterial = AssetDatabase.LoadAssetAtPath<Material>(
+                "Assets/Art/Buildings/Building_Wall.mat");
+        if (vis.wallStripOnMaterial == null)
+            vis.wallStripOnMaterial = AssetDatabase.LoadAssetAtPath<Material>(
+                "Assets/Art/Buildings/Building_Wall_StripOn.mat");
+        if (vis.wallLitMaterial == null)
+            vis.wallLitMaterial = AssetDatabase.LoadAssetAtPath<Material>(
+                "Assets/Art/Buildings/Building_Wall_Lit.mat");
+#endif
+        if (wallBack != null)
+        {
+            if (vis.wallLitMaterial != null)
+                wallBack.sharedMaterial = vis.wallLitMaterial;
+            wallBack.SetPropertyBlock(null);
+        }
+
+        vis.ForceRefresh();
+        enabled = false;
+        Debug.Log(
+            "[ShopWallVisibility] Bootstrapped BuildingInteriorVisibility — " +
+            $"always={always.Count} cullable={cullable.Count} roof={roofs.Count} floor={floors.Count}");
     }
 }
