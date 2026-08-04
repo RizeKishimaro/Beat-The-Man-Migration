@@ -10,7 +10,21 @@
       "mcp__unityMCP__execute_code",
       "mcp__unityMCP__manage_scene",
       "Bash(git add *)",
-      "Bash(rm /Users/sammy/BeatTheMan/.git/index.lock *)"
+      "Bash(rm /Users/sammy/BeatTheMan/.git/index.lock *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "mcp__c0715f41-471c-43b1-abe6-9e5ee8ccb7f1__trelloReadCard",
+      "mcp__c0715f41-471c-43b1-abe6-9e5ee8ccb7f1__trelloReadChecklist",
+      "Bash(which blender 2>/dev/null; ls /Applications/ | grep -i blender; find /Applications -maxdepth 2 -iname \"*blender*\" 2>/dev/null *)",
+      "Bash(/Applications/Blender.app/Contents/MacOS/Blender --background --python \"/Users/sammy/BeatTheMan/BlenderSource/Vehicles/_build_vehicle_car_base.py\")",
+      "Bash(/Applications/Blender.app/Contents/MacOS/Blender --background --python \"/Users/sammy/BeatTheMan/BlenderSource/Vehicles/_verify_vehicle_car_base.py\")",
+      "Bash(/Applications/Blender.app/Contents/MacOS/Blender --background --python \"/Users/sammy/BeatTheMan/BlenderSource/Vehicles/_verify_vehicle_fbx_reimport.py\")",
+      "Bash(open \"/Users/sammy/BeatTheMan/BlenderSource/Vehicles/Vehicle_Car_Base.blend\")",
+      "Bash(/Applications/Blender.app/Contents/MacOS/Blender --background --python \"/Users/sammy/BeatTheMan/BlenderSource/Vehicles/_render_reference.py\")",
+      "Bash(/Applications/Blender.app/Contents/MacOS/Blender --background --python \"/Users/sammy/BeatTheMan/BlenderSource/Vehicles/_render_car.py\" -- \"/Users/sammy/BeatTheMan/BlenderSource/Vehicles/Vehicle_Car_Base.blend\" \"/Users/sammy/BeatTheMan/BlenderSource/Vehicles/_reference_renders/rebuilt_3q.png\")",
+      "Bash(python3 -c ' *)",
+      "mcp__unityMCP__manage_material",
+      "mcp__unityMCP__manage_camera"
     ]
   }
 }
