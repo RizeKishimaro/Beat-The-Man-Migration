@@ -207,6 +207,7 @@ public class PlayerOverheadCarry : MonoBehaviour
 
     [SerializeField] float pickupRadius = 1.6f;
     [SerializeField] float dropForward = 0.85f;
+    [SerializeField] float nodeOfferRadius = 2.0f;
 
     Transform carrySocket;
     CarryableItem held;
@@ -273,6 +274,10 @@ public class PlayerOverheadCarry : MonoBehaviour
         if (best == null)
             return;
 
+        // If the Object is sitting on a Node slot, free that Node first.
+        DefaultNode host = best.GetComponentInParent<DefaultNode>();
+        host?.NotifyItemRemoved(best);
+
         best.PickUp(carrySocket);
         held = best;
         held.AssertCarryPose(carrySocket);
@@ -288,6 +293,25 @@ public class PlayerOverheadCarry : MonoBehaviour
         if (held == null)
             return;
 
+        DefaultNode node = FindNearestNode();
+        if (node != null)
+        {
+            if (node.TryAccept(held))
+            {
+                CarryableItem placed = held;
+                held = null;
+                ResolveHandCarry()?.NotifyDropped();
+                Debug.Log($"[PlayerOverheadCarry] Placed {placed.name} on Node '{node.name}'");
+                return;
+            }
+
+            // Reject-flow A: wrong type or occupied — keep in hand (no-op).
+            Debug.Log(
+                $"[PlayerOverheadCarry] Node '{node.name}' rejected {held.name} " +
+                $"(occupied={node.IsOccupied}) — kept in hand");
+            return;
+        }
+
         CarryableItem item = held;
         held = null;
 
@@ -296,6 +320,35 @@ public class PlayerOverheadCarry : MonoBehaviour
         item.Drop(dropPos, dropRot);
         ResolveHandCarry()?.NotifyDropped();
         Debug.Log($"[PlayerOverheadCarry] Dropped {item.name} at {dropPos}");
+    }
+
+    DefaultNode FindNearestNode()
+    {
+        Collider[] hits = Physics.OverlapSphere(
+            transform.position + Vector3.up * 0.5f,
+            nodeOfferRadius,
+            ~0,
+            QueryTriggerInteraction.Collide);
+
+        DefaultNode best = null;
+        float bestDist = float.MaxValue;
+        Vector3 origin = transform.position;
+
+        for (int i = 0; i < hits.Length; i++)
+        {
+            DefaultNode node = hits[i].GetComponentInParent<DefaultNode>();
+            if (node == null)
+                continue;
+
+            float d = (node.transform.position - origin).sqrMagnitude;
+            if (d < bestDist)
+            {
+                bestDist = d;
+                best = node;
+            }
+        }
+
+        return best;
     }
 
     CarryableItem FindNearestCarryable()
