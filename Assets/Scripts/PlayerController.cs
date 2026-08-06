@@ -45,6 +45,9 @@ public class PlayerController : MonoBehaviour
         if (GetComponent<PlayerOverheadCarry>() == null)
             gameObject.AddComponent<PlayerOverheadCarry>();
 
+        if (GetComponent<PlayerJumpOnSeat>() == null)
+            gameObject.AddComponent<PlayerJumpOnSeat>();
+
         WorldFloorEnsure.Ensure();
         EnsureCharacterVisual();
         ItemCrateWorldSpawn.EnsureOutsideCrate();
@@ -52,6 +55,13 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        var jumpOn = GetComponent<PlayerJumpOnSeat>();
+        if (jumpOn != null && jumpOn.BlocksMovement)
+        {
+            planarSpeed = 0f;
+            return;
+        }
+
         Vector2 input = ReadMoveInput();
         Vector3 move = new Vector3(input.x, 0f, input.y);
         if (move.sqrMagnitude > 1f)
