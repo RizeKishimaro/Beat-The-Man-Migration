@@ -17,6 +17,7 @@ public class CarryableItem : MonoBehaviour
     bool[] colliderWasTrigger;
     RigidbodyInterpolation savedInterpolation;
     bool carried;
+    Vector3 restWorldScale = Vector3.one;
 
     public bool IsCarried => carried;
     public Rigidbody Body => body != null ? body : GetComponent<Rigidbody>();
@@ -25,6 +26,7 @@ public class CarryableItem : MonoBehaviour
     {
         body = GetComponent<Rigidbody>();
         CacheColliders();
+        restWorldScale = transform.lossyScale;
     }
 
     void CacheColliders()
@@ -66,10 +68,13 @@ public class CarryableItem : MonoBehaviour
         body.detectCollisions = false;
         body.interpolation = RigidbodyInterpolation.None;
 
+        // Preserve current world size (e.g. Meshy chair at 1.5) across carry.
+        restWorldScale = transform.lossyScale;
+
         transform.SetParent(socket, false);
         transform.localPosition = new Vector3(0f, socketLocalYOffset, 0f);
         transform.localRotation = Quaternion.identity;
-        transform.localScale = Vector3.one;
+        ApplyRestLocalScaleUnder(socket);
 
         carried = true;
         AssertCarryPose(socket);
@@ -82,6 +87,7 @@ public class CarryableItem : MonoBehaviour
 
         transform.SetParent(null, true);
         transform.SetPositionAndRotation(worldPosition, worldRotation);
+        transform.localScale = restWorldScale;
 
         if (body == null)
             body = GetComponent<Rigidbody>();
@@ -125,12 +131,8 @@ public class CarryableItem : MonoBehaviour
         transform.SetParent(slot, false);
         transform.localPosition = Vector3.zero;
         transform.localRotation = Quaternion.identity;
-        // Counteract parent Node non-uniform scale so the Object keeps world size 1.
-        Vector3 ps = slot.lossyScale;
-        transform.localScale = new Vector3(
-            Mathf.Approximately(ps.x, 0f) ? 1f : 1f / ps.x,
-            Mathf.Approximately(ps.y, 0f) ? 1f : 1f / ps.y,
-            Mathf.Approximately(ps.z, 0f) ? 1f : 1f / ps.z);
+        // Counteract parent Node scale so the Object keeps its rest world size.
+        ApplyRestLocalScaleUnder(slot);
 
         // Zero velocity only while still non-kinematic (Unity warns otherwise).
         if (!body.isKinematic)
@@ -156,6 +158,15 @@ public class CarryableItem : MonoBehaviour
         }
 
         carried = false;
+    }
+
+    void ApplyRestLocalScaleUnder(Transform parent)
+    {
+        Vector3 ps = parent != null ? parent.lossyScale : Vector3.one;
+        transform.localScale = new Vector3(
+            Mathf.Approximately(ps.x, 0f) ? restWorldScale.x : restWorldScale.x / ps.x,
+            Mathf.Approximately(ps.y, 0f) ? restWorldScale.y : restWorldScale.y / ps.y,
+            Mathf.Approximately(ps.z, 0f) ? restWorldScale.z : restWorldScale.z / ps.z);
     }
 
     /// <summary>Used by Storage Nodes to hide/show mesh while the Object stays inside.</summary>
