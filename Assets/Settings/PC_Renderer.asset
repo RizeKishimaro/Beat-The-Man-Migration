@@ -77,7 +77,7 @@ MonoBehaviour:
     Intensity: 0.55
     DirectLightingStrength: 0.25
     Radius: 0.35
-    Samples: 1
+    Samples: 0
     BlurQuality: 0
     Falloff: 100
     SampleCount: -1

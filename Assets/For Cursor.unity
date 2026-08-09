@@ -670,8 +670,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BuildingInteriorVisibility
   interiorVolume: {fileID: 910000010}
-  alwaysVisibleWalls:
-  - {fileID: 910000020}
+  alwaysVisibleWalls: []
   cullableWalls:
   - {fileID: 910000025}
   - {fileID: 910000030}

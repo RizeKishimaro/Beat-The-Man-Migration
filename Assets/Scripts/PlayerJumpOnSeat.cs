@@ -9,7 +9,8 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(CharacterController))]
 public class PlayerJumpOnSeat : MonoBehaviour
 {
-    [SerializeField] float detectRadius = 1.6f;
+    // Spawn≈(-0.58,0,-0.5) chair≈(1.5,0,-0.5) → ~2.08 m; keep radius above that.
+    [SerializeField] float detectRadius = 2.5f;
     [SerializeField] float dismountMoveThreshold = 0.2f;
 
     PlayerOverheadCarry carry;
@@ -47,11 +48,19 @@ public class PlayerJumpOnSeat : MonoBehaviour
         if (!WasActionPressed())
             return;
         if (carry != null && carry.IsCarrying)
+        {
+            Debug.Log("[PlayerJumpOnSeat] Space ignored — currently carrying");
             return;
+        }
 
         JumpOnSeatPoint seatPoint = FindNearestSeat();
         if (seatPoint == null)
+        {
+            Debug.Log(
+                $"[PlayerJumpOnSeat] Space — no JumpOnSeatPoint within {detectRadius:F1} m " +
+                $"(player at {transform.position})");
             return;
+        }
 
         BeginJumpOn(seatPoint);
     }
@@ -126,28 +135,26 @@ public class PlayerJumpOnSeat : MonoBehaviour
 
     JumpOnSeatPoint FindNearestSeat()
     {
-        Collider[] hits = Physics.OverlapSphere(
-            transform.position + Vector3.up * 0.5f,
-            detectRadius,
-            ~0,
-            QueryTriggerInteraction.Collide);
-
+        // Distance to seat roots — more reliable than OverlapSphere alone
+        // (spawn can sit just outside collider reach at the old 1.6 m radius).
         JumpOnSeatPoint best = null;
         float bestDist = float.MaxValue;
         Vector3 origin = transform.position;
+        float maxSqr = detectRadius * detectRadius;
 
-        for (int i = 0; i < hits.Length; i++)
+        JumpOnSeatPoint[] seats = FindObjectsByType<JumpOnSeatPoint>(FindObjectsSortMode.None);
+        for (int i = 0; i < seats.Length; i++)
         {
-            JumpOnSeatPoint seatPoint = hits[i].GetComponentInParent<JumpOnSeatPoint>();
-            if (seatPoint == null)
+            JumpOnSeatPoint seatPoint = seats[i];
+            if (seatPoint == null || !seatPoint.isActiveAndEnabled)
                 continue;
 
             float d = (seatPoint.transform.position - origin).sqrMagnitude;
-            if (d < bestDist)
-            {
-                bestDist = d;
-                best = seatPoint;
-            }
+            if (d > maxSqr || d >= bestDist)
+                continue;
+
+            bestDist = d;
+            best = seatPoint;
         }
 
         return best;

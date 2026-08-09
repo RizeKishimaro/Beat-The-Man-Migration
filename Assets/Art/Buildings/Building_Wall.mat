@@ -37,6 +37,6 @@ Material:
     - _StripHeight: 0.3
     - _WallBaseY: 0
     m_Colors:
-    - _BaseColor: {r: 0.72, g: 0.70, b: 0.66, a: 1}
+    - _BaseColor: {r: 0.72, g: 0.7, b: 0.66, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
