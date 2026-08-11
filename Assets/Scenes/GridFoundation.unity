@@ -153,7 +153,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CameraFollow
   target: {fileID: 1940956860}
   offset: {x: -8, y: 7, z: -8}
-  orthographicSize: 6
+  outdoorOrthographicSize: 6
+  interiorOrthographicSize: 4.5
+  roomTransitionDuration: 0.3
+  interiorFocusNudge: {x: 0, y: 0}
 --- !u!81 &39933814
 AudioListener:
   m_ObjectHideFlags: 0

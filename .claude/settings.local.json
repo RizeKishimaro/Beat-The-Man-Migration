@@ -24,7 +24,10 @@
       "Bash(/Applications/Blender.app/Contents/MacOS/Blender --background --python \"/Users/sammy/BeatTheMan/BlenderSource/Vehicles/_render_car.py\" -- \"/Users/sammy/BeatTheMan/BlenderSource/Vehicles/Vehicle_Car_Base.blend\" \"/Users/sammy/BeatTheMan/BlenderSource/Vehicles/_reference_renders/rebuilt_3q.png\")",
       "Bash(python3 -c ' *)",
       "mcp__unityMCP__manage_material",
-      "mcp__unityMCP__manage_camera"
+      "mcp__unityMCP__manage_camera",
+      "Bash(echo \"--- exit: $? ---\")",
+      "Bash(git check-ignore *)",
+      "Bash(echo \"--- check-ignore exit: $? ---\")"
     ]
   }
 }

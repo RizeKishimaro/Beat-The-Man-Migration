@@ -1,5 +1,5 @@
 """
-Ticket 117 — Default Building master atom (pre-119 geometry restored).
+Ticket 117 / 122 — Default Building master atom.
 
 Grid-corner snap: root empty sits at the exterior min corner (0,0,0).
 
@@ -9,9 +9,10 @@ Footprint
   6x6 m  interior clear space     (x/y 1..7)
   0.7 m  leftover toward the outer edge = future exterior-decor margin
 
-The wall ring is CLOSED: back/front span the full ring width (0.7..7.3) and the
-side walls fill between them (1..7). Walls must NOT run out to the 8 m exterior
-or the corners end up as unsupported stubs.
+Ticket 122 — EVEN WALLS: all four sides of the wall ring span the same
+6.6 m outer length (picture-frame). Left/Right run W_MIN..W_MAX on Y
+(overlapping corners with Front/Back). Do NOT stretch walls to the 8 m
+exterior — the 0.7 m margin stays for future exterior decor.
 
 Front wall is the MIN-Y side.
 
@@ -35,8 +36,9 @@ the doors then tip like a drawbridge and never detect the player crossing.
 bake_space_transform=True is NOT a shortcut — it detaches the parented door
 leaves from their hinges.
 
-Run:
-  blender --background --python _build_default_building.py -- --export-fbx
+Run (from repo):
+  /Applications/Blender.app/Contents/MacOS/Blender --background \\
+    --python BlenderSource/Rooms/_build_default_building.py -- --export-fbx
 """
 import math
 import os
@@ -45,8 +47,10 @@ import sys
 import bpy
 import mathutils
 
-BLEND_PATH = "/Users/sammy/BeatTheMan/BlenderSource/Rooms/DefaultBuilding.blend"
-FBX_PATH = "/Users/sammy/BeatTheMan/Assets/Art/Buildings/DefaultBuilding.fbx"
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+_REPO_ROOT = os.path.abspath(os.path.join(_SCRIPT_DIR, "..", ".."))
+BLEND_PATH = os.path.join(_SCRIPT_DIR, "DefaultBuilding.blend")
+FBX_PATH = os.path.join(_REPO_ROOT, "Assets", "Art", "Buildings", "DefaultBuilding.fbx")
 EXPORT_FBX = "--export-fbx" in sys.argv or os.environ.get("DEFAULT_BUILDING_EXPORT_FBX") == "1"
 
 # --- Footprint (meters, Blender Z-up, X right, Y forward) ---
@@ -58,10 +62,11 @@ WALL_H = 3.0
 FLOOR_T = 0.05
 CEIL_T = 0.05
 
-DOOR_W = 2.0
+# Ticket 122: 1.8 m centered (0.1 trimmed from each side of prior 2.0).
+DOOR_W = 1.8
 DOOR_H = 2.2
-DOOR_X0 = EXT * 0.5 - DOOR_W * 0.5  # 3.0
-DOOR_X1 = EXT * 0.5 + DOOR_W * 0.5  # 5.0
+DOOR_X0 = EXT * 0.5 - DOOR_W * 0.5
+DOOR_X1 = EXT * 0.5 + DOOR_W * 0.5
 LEAF_T = 0.06
 
 F_OUT, F_IN = W_MIN, INT_MIN  # front wall (min Y -> Unity -Z): 0.7 .. 1.0
@@ -134,14 +139,15 @@ def world_aabb(name):
 EXPECTED = {
     "RoomFloor":         (1.0, 7.0, 1.0, 7.0, 0.0, 0.05),
     "RoomCeiling":       (1.0, 7.0, 1.0, 7.0, 2.95, 3.0),
+    # Ticket 122: all four ring sides span 6.6 m (W_MIN..W_MAX).
     "Wall_Back":         (0.7, 7.3, 7.0, 7.3, 0.0, 3.0),
-    "Wall_Left":         (0.7, 1.0, 1.0, 7.0, 0.0, 3.0),
-    "Wall_Right":        (7.0, 7.3, 1.0, 7.0, 0.0, 3.0),
-    "Wall_Front_Left":   (0.7, 3.0, 0.7, 1.0, 0.0, 3.0),
-    "Wall_Front_Right":  (5.0, 7.3, 0.7, 1.0, 0.0, 3.0),
-    "Wall_Front_Lintel": (3.0, 5.0, 0.7, 1.0, 2.2, 3.0),
-    "DoorLeaf_Left":     (3.0, 4.0, 0.82, 0.88, 0.0, 2.2),
-    "DoorLeaf_Right":    (4.0, 5.0, 0.82, 0.88, 0.0, 2.2),
+    "Wall_Left":         (0.7, 1.0, 0.7, 7.3, 0.0, 3.0),
+    "Wall_Right":        (7.0, 7.3, 0.7, 7.3, 0.0, 3.0),
+    "Wall_Front_Left":   (0.7, DOOR_X0, 0.7, 1.0, 0.0, 3.0),
+    "Wall_Front_Right":  (DOOR_X1, 7.3, 0.7, 1.0, 0.0, 3.0),
+    "Wall_Front_Lintel": (DOOR_X0, DOOR_X1, 0.7, 1.0, DOOR_H, 3.0),
+    "DoorLeaf_Left":     (DOOR_X0, DOOR_X0 + DOOR_W * 0.5, 0.82, 0.88, 0.0, DOOR_H),
+    "DoorLeaf_Right":    (DOOR_X0 + DOOR_W * 0.5, DOOR_X1, 0.82, 0.88, 0.0, DOOR_H),
 }
 
 
@@ -156,8 +162,8 @@ def verify():
         if not ok:
             failures.append(name)
 
-    for name, exp in (("DoorHinge_Left", (3.0, 0.85, 0.0)),
-                      ("DoorHinge_Right", (5.0, 0.85, 0.0))):
+    for name, exp in (("DoorHinge_Left", (DOOR_X0, DOOR_Y, 0.0)),
+                      ("DoorHinge_Right", (DOOR_X1, DOOR_Y, 0.0))):
         w = bpy.data.objects[name].matrix_world.translation
         act = (round(w.x, 3), round(w.y, 3), round(w.z, 3))
         ok = all(abs(act[i] - exp[i]) < 0.002 for i in range(3))
@@ -165,13 +171,25 @@ def verify():
         if not ok:
             failures.append(name)
 
-    # the 2 m opening must contain no wall geometry below the lintel
+    # Opening must contain no wall geometry below the lintel.
+    open_lo = DOOR_X0 + 0.001
+    open_hi = DOOR_X1 - 0.001
     for wall in ("Wall_Back", "Wall_Left", "Wall_Right",
                  "Wall_Front_Left", "Wall_Front_Right", "Wall_Front_Lintel"):
         b = world_aabb(wall)
-        if b[0] < 4.999 and b[1] > 3.001 and b[2] < 0.999 and b[3] > 0.701 and b[4] < 2.199:
+        if b[0] < open_hi and b[1] > open_lo and b[2] < 0.999 and b[3] > 0.701 and b[4] < (DOOR_H - 0.001):
             print("FAIL door opening blocked by", wall)
             failures.append(wall)
+
+    # Ticket 122: left/right/back long-axis lengths must match (6.6 m).
+    ring_len = round(W_MAX - W_MIN, 3)
+    for name, axis in (("Wall_Back", "x"), ("Wall_Left", "y"), ("Wall_Right", "y")):
+        b = world_aabb(name)
+        length = round((b[1] - b[0]) if axis == "x" else (b[3] - b[2]), 3)
+        ok = abs(length - ring_len) < 0.002
+        print(("PASS " if ok else "FAIL ") + name + "_length", length, "expected", ring_len)
+        if not ok:
+            failures.append(name + "_length")
 
     return failures
 
@@ -219,9 +237,10 @@ def main():
     make_box("RoomCeiling", INT_MIN, INT_MAX, INT_MIN, INT_MAX,
              WALL_H - CEIL_T, WALL_H, m_ceil, root)
 
+    # Picture-frame ring: each full side spans W_MIN..W_MAX (6.6 m).
     make_box("Wall_Back", W_MIN, W_MAX, B_IN, B_OUT, 0.0, WALL_H, m_wall, root)
-    make_box("Wall_Left", W_MIN, INT_MIN, INT_MIN, INT_MAX, 0.0, WALL_H, m_wall, root)
-    make_box("Wall_Right", INT_MAX, W_MAX, INT_MIN, INT_MAX, 0.0, WALL_H, m_wall, root)
+    make_box("Wall_Left", W_MIN, INT_MIN, W_MIN, W_MAX, 0.0, WALL_H, m_wall, root)
+    make_box("Wall_Right", INT_MAX, W_MAX, W_MIN, W_MAX, 0.0, WALL_H, m_wall, root)
 
     make_box("Wall_Front_Left", W_MIN, DOOR_X0, F_OUT, F_IN, 0.0, WALL_H, m_wall, root)
     make_box("Wall_Front_Right", DOOR_X1, W_MAX, F_OUT, F_IN, 0.0, WALL_H, m_wall, root)
@@ -245,7 +264,10 @@ def main():
     bpy.ops.object.select_all(action="DESELECT")
     bpy.context.view_layer.update()
 
-    print("=== DefaultBuilding blockout verification (pre-119 geometry) ===")
+    print("=== DefaultBuilding blockout verification (ticket 122 even walls) ===")
+    print("BLEND_PATH", BLEND_PATH)
+    print("FBX_PATH", FBX_PATH)
+    print("DOOR_W", DOOR_W)
     failures = verify()
     if failures:
         print("VERIFICATION FAILED:", failures)
