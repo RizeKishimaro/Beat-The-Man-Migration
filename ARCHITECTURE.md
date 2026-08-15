@@ -52,5 +52,23 @@ https://trello.com/c/hMZwfwM8/6-carry-drop-grid-slot-system
 
 Building/Node placement must register against this same grid, not a separate one.
 
+## Scale (added 2026-08-15, ticket 135)
+ONE real-world scale convention, everywhere: **1 Blender unit = 1 metre = 1 Unity unit.**
+Blender scenes stay METRIC with `scale_length = 1.0`; FBX exports use `apply_unit_scale` +
+`FBX_SCALE_ALL`; Unity importers stay at `useFileScale = 1`, `globalScale = 1`.
+
+Multi-part assets (the F1 car and its chassis/body/wheels) are exported from ONE master
+file at that scale with a shared origin, so parts are inherently sized correctly relative
+to each other. **Never resize an individual part** — a part that looks wrong-sized is
+almost always the whole asset being wrong-sized.
+
+If an assembled asset needs to be bigger or smaller for gameplay or art-direction reasons,
+that is ONE multiplier applied ONCE on the top-level assembled parent/prefab in Unity —
+never per-part, never baked into individual meshes. F1 car: `F1_Car` root, **×3**
+(whole car 2.88 × 2.15 × 3.82 m). Parts stay at local scale 1 underneath it.
+
+Note the F1 model is a stylised kart, not F1-proportioned — real F1 dimensions are NOT a
+valid scale target for it (matching them needs ×1.36 to ×4.60 depending on the axis).
+
 ## Before building
 Ask: "Object, Character, Building, Node, or Vehicle?" Then build as a Prefab in the matching folder (Items/, Characters/, Environment/, Vehicles/).

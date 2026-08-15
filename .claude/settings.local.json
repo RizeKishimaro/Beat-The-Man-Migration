@@ -27,7 +27,9 @@
       "mcp__unityMCP__manage_camera",
       "Bash(echo \"--- exit: $? ---\")",
       "Bash(git check-ignore *)",
-      "Bash(echo \"--- check-ignore exit: $? ---\")"
+      "Bash(echo \"--- check-ignore exit: $? ---\")",
+      "Bash(git lfs *)",
+      "Bash(cp \"/Users/sammy/Downloads/Meshy_AI_Fusion_XP_3000_Tire_0814081341_texture.blend\" \"/Users/sammy/Documents/GitHub/BeatTheMan/Assets/Objects/F1 Car/\" && ls -la \"/Users/sammy/Documents/GitHub/BeatTheMan/Assets/Objects/F1 Car/\")"
     ]
   }
 }

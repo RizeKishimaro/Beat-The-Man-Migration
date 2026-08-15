@@ -1,0 +1,8 @@
+axis=y spans=[(1.89999121427536, 'x'), (0.8607900142669678, 'y'), (1.9001396298408508, 'z')]
+before v=971277 f=1942660
+decimate_ratio=0.001625 eval_faces=3155
+after v=1524 f=3155
+blend=/Users/sammy/Documents/GitHub/BeatTheMan/BlenderSource/F1/Wheel_FusionXP_Game.blend
+fbx=/Users/sammy/Documents/GitHub/BeatTheMan/Assets/Art/Vehicles/Wheel_FusionXP/Wheel_FusionXP.fbx
+textures=['/Users/sammy/Documents/GitHub/BeatTheMan/Assets/Art/Vehicles/Wheel_FusionXP/base_color.png', '/Users/sammy/Documents/GitHub/BeatTheMan/Assets/Art/Vehicles/Wheel_FusionXP/metallic_roughness.png', '/Users/sammy/Documents/GitHub/BeatTheMan/Assets/Art/Vehicles/Wheel_FusionXP/normal.png']
+render=/Users/sammy/Documents/GitHub/BeatTheMan/BlenderSource/F1/_wheel_game_preview.png

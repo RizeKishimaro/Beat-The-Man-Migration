@@ -60,5 +60,12 @@ crashlytics-build.properties
 # Scrapped Town placeholder assets (fused/unusable, superseded by new room pipeline)
 /[Aa]ssets/[Aa]rt/[Tt]own/
 /[Aa]ssets/[Aa]rt/[Tt]own.meta
+# Abandoned FusionXP wheel exploration — superseded by F1_Wheels/ChromeDrift
+# (tickets 130, 135, 136). Multiple .blend working files are 169-175MB each and
+# would permanently bloat history if ever committed. Files stay on disk.
+*_BACKUP_*.blend
+*FusionXP*
+*Fusion_XP_3000*
+
 # macOS
 .DS_Store

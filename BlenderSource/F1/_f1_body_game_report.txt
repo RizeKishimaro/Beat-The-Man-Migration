@@ -1,0 +1,6 @@
+src=/Users/sammy/Documents/GitHub/BeatTheMan/Assets/Objects/F1 Car/Meshy_AI_Aero_Kart_Prototype_0809085417_generate.blend
+before v=358450 f=716385
+decimate_ratio=0.006875 eval_faces=4925
+after v=2586 f=4925
+out=/Users/sammy/Documents/GitHub/BeatTheMan/BlenderSource/F1/F1_Body_Game.blend
+preview=/Users/sammy/Documents/GitHub/BeatTheMan/BlenderSource/F1/_f1_body_game_preview.png

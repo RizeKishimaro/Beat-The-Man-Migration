@@ -1,0 +1,12 @@
+src=/Users/sammy/Documents/GitHub/BeatTheMan/Assets/Objects/F1 Car/Meshy_AI_Aero_Kart_Prototype_0809085417_generate.blend (opened read-only, never saved)
+
+BODY 'F1_Body_Game' -> 'F1_Body' verts=2586 size=0.864 x 0.997 x 0.689 origin=(0,0,0)
+WHEEL 'Wheel_FL' -> 'Wheel_FL' verts=1521 size=0.181 x 0.362 x 0.362 axle=(0.2745, -0.3736, -0.1583)
+WHEEL 'Wheel_FR' -> 'Wheel_FR' verts=1521 size=0.181 x 0.362 x 0.362 axle=(-0.2684, -0.3736, -0.1583)
+WHEEL 'Wheel_RL' -> 'Wheel_RL' verts=1521 size=0.214 x 0.358 x 0.358 axle=(0.3755, 0.4170, -0.1221)
+WHEEL 'Wheel_RR' -> 'Wheel_RR' verts=1521 size=0.214 x 0.358 x 0.358 axle=(-0.3696, 0.4175, -0.1221)
+
+BODY+WHEELS combined = 0.960 x 1.272 x 0.717
+body=/Users/sammy/Documents/GitHub/BeatTheMan/Assets/Objects/F1 Car/F1_Body/F1_Body.fbx
+wheels=/Users/sammy/Documents/GitHub/BeatTheMan/Assets/Objects/F1 Car/F1_Wheels/F1_Wheels.fbx
+blend=/Users/sammy/Documents/GitHub/BeatTheMan/BlenderSource/F1/F1_CarParts_Game.blend

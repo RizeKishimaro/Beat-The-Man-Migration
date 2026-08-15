@@ -1,0 +1,6 @@
+hub_faces=1743 tire_faces=1412
+low v=1524 f=3155
+normal=/Users/sammy/Documents/GitHub/BeatTheMan/BlenderSource/F1/Wheel_FusionXP_normal.png
+ao=/Users/sammy/Documents/GitHub/BeatTheMan/BlenderSource/F1/Wheel_FusionXP_ao.png
+out=/Users/sammy/Documents/GitHub/BeatTheMan/BlenderSource/F1/Wheel_FusionXP_LowPoly.blend
+preview=/Users/sammy/Documents/GitHub/BeatTheMan/BlenderSource/F1/_lowpoly_rebake_preview.png

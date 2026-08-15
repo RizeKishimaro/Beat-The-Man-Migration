@@ -1,0 +1,42 @@
+src=/Users/sammy/Documents/GitHub/BeatTheMan/Assets/Objects/F1 Car/Meshy_AI_Aero_Kart_Prototype_0809085417_generate.blend (opened read-only, never saved)
+root='F1_Chassis', 7 parts, totals verts=1344 faces=1796
+origin: world (0,0,0) via ORIGIN_CURSOR, then All Transforms applied
+
+  'Middle body pod' -> 'F1_Chassis'
+      verts=274 faces=472 mods=[] mats=[]
+      before loc=(0.00000, 0.00000, 0.00000) rot=(0.00000, 0.00000, 0.00000) scale=(0.81218, 1.00000, 1.00000)
+      after  loc=(0.00000, 0.00000, 0.00000) rot=(0.00000, 0.00000, 0.00000) scale=(1.00000, 1.00000, 1.00000)
+      world bounds=(-0.15228, 0.15228, -0.50000, 0.24706, -0.24512, 0.13281) drift=0.000000000
+  'left body pod' -> 'Chassis_BodyPod_L'
+      verts=378 faces=344 mods=[] mats=[]
+      before loc=(0.00000, 0.00000, 0.00000) rot=(0.00000, 0.00000, 0.00000) scale=(0.80000, 1.00000, 1.00000)
+      after  loc=(0.00000, 0.00000, 0.00000) rot=(0.00000, 0.00000, 0.00000) scale=(1.00000, 1.00000, 1.00000)
+      world bounds=(0.11041, 0.26875, -0.15775, 0.21973, -0.24023, -0.00154) drift=0.000000000
+  'right body pod' -> 'Chassis_BodyPod_R'
+      verts=319 faces=325 mods=[] mats=[]
+      before loc=(0.00000, 0.00000, 0.00000) rot=(0.00000, 0.00000, 0.00000) scale=(0.80000, 1.00000, 1.00000)
+      after  loc=(0.00000, 0.00000, 0.00000) rot=(0.00000, 0.00000, 0.00000) scale=(1.00000, 1.00000, 1.00000)
+      world bounds=(-0.26875, -0.11041, -0.15775, 0.22070, -0.24219, -0.00185) drift=0.000000000
+  'Seat' -> 'Chassis_Seat'
+      verts=77 faces=131 mods=[] mats=[]
+      before loc=(0.00000, -0.00697, 0.00000) rot=(0.00000, 0.00000, 0.00000) scale=(1.00000, 1.00000, 1.00000)
+      after  loc=(0.00000, 0.00000, 0.00000) rot=(0.00000, 0.00000, 0.00000) scale=(1.00000, 1.00000, 1.00000)
+      world bounds=(-0.13672, 0.13086, -0.18568, 0.05113, -0.18652, 0.09082) drift=0.000000000
+  'Rear block' -> 'Chassis_RearBlock'
+      verts=23 faces=42 mods=[] mats=[]
+      before loc=(0.00000, -0.46445, -0.03134) rot=(0.00000, 0.00000, 0.00000) scale=(1.00000, 2.38192, 1.00000)
+      after  loc=(0.00000, 0.00000, 0.00000) rot=(0.00000, 0.00000, 0.00000) scale=(1.00000, 1.00000, 1.00000)
+      world bounds=(-0.14453, 0.13770, 0.04962, 0.52181, -0.17880, -0.04483) drift=0.000000011
+  'Rear support' -> 'Chassis_RearSupport'
+      verts=223 faces=386 mods=[] mats=[]
+      before loc=(0.00000, 0.06738, 0.00000) rot=(0.00000, 0.00000, 0.00000) scale=(1.00000, 1.00000, 1.00000)
+      after  loc=(0.00000, 0.00000, 0.00000) rot=(0.00000, 0.00000, 0.00000) scale=(1.00000, 1.00000, 1.00000)
+      world bounds=(-0.25195, 0.24884, 0.16422, 0.55758, -0.18457, 0.05493) drift=0.000000000
+  'Rear Light' -> 'Chassis_RearLight'
+      verts=50 faces=96 mods=[] mats=[]
+      before loc=(0.00000, 0.06738, 0.00000) rot=(0.00000, 0.00000, 0.00000) scale=(1.00000, 1.00000, 1.00000)
+      after  loc=(0.00000, 0.00000, 0.00000) rot=(0.00000, 0.00000, 0.00000) scale=(1.00000, 1.00000, 1.00000)
+      world bounds=(-0.04555, 0.04565, 0.53003, 0.55809, -0.13967, 0.01380) drift=0.000000000
+
+fbx=/Users/sammy/Documents/GitHub/BeatTheMan/Assets/Objects/F1 Car/F1_Chassis/F1_Chassis.fbx
+blend=/Users/sammy/Documents/GitHub/BeatTheMan/BlenderSource/F1/F1_Chassis_Game.blend

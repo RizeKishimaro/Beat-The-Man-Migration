@@ -1,0 +1,53 @@
+filepath=/Users/sammy/Documents/GitHub/BeatTheMan/BlenderSource/F1/Wheel_ChromeDrift.blend
+=== objects ===
+LIGHT Fill_Wide
+LIGHT Key_Soft
+LIGHT Rim_Back_L
+LIGHT Rim_Back_R
+MESH Studio_Backdrop verts=228 faces=113 loc=(0.0, 0.0, 0.0) rot=(0.0, 0.0, 37.78) scale=(1.0, 1.0, 1.0)
+  world dims xyz=(20.0411, 18.8511, 6.2133)
+  uv=[] mats=['Studio_Backdrop.001']
+  slot0 Studio_Backdrop.001 faces=113
+CAMERA Studio_Cam
+LIGHT Top_Strip
+MESH Wheel_ChromeDrift_Rim verts=572 faces=1031 loc=(0.0, 0.0, 0.0) rot=(0.0, 0.0, 0.0) scale=(1.0, 1.0, 1.0)
+  world dims xyz=(0.2580, 0.3825, 0.3867)
+  uv=['UVMap'] mats=['Wheel_GlossBlack']
+  slot0 Wheel_GlossBlack faces=1031
+MESH Wheel_ChromeDrift_Tire verts=355 faces=710 loc=(0.0, 0.0, 0.0) rot=(0.0, 0.0, 0.0) scale=(1.0, 1.0, 1.0)
+  world dims xyz=(0.2995, 0.7200, 0.7200)
+  uv=['UVMap'] mats=['Tire_Rubber']
+  slot0 Tire_Rubber faces=710
+=== images ===
+  Render Result size=(0, 0) packed=False path=
+=== materials ===
+  Studio_Backdrop.001 nodes=True
+    BSDF_PRINCIPLED Principled BSDF color=(0.8, 0.8, 0.8, 1.0) metal=0.00 rough=0.62
+    OUTPUT_MATERIAL Material Output
+    NEW_GEOMETRY Geometry
+    VECT_MATH Vector Math
+    VECT_MATH Vector Math.001
+    MAP_RANGE Map Range
+    MIX_RGB Mix (Legacy)
+  Tire_Rubber nodes=True
+    BSDF_PRINCIPLED Principled BSDF color=(0.01, 0.01, 0.01, 1.0) metal=0.00 rough=0.41
+    OUTPUT_MATERIAL Material Output
+  Wheel_GlossBlack nodes=True
+    BSDF_PRINCIPLED Principled BSDF color=(0.016, 0.016, 0.018, 1.0) metal=0.00 rough=0.11
+    OUTPUT_MATERIAL Material Output
+=== radius (guess spin axis=x, spans=[('x', 0.2580469101667404), ('y', 0.382500022649765), ('z', 0.3867187649011612)]) ===
+r [0.0014, 0.1961] axis [-0.1294, 0.1287]
+  r[0.001,0.018) n=5 ax_span=0.0757 ax_mean=-0.0085
+  r[0.018,0.034) n=12 ax_span=0.0007 ax_mean=-0.0471
+  r[0.034,0.050) n=16 ax_span=0.0139 ax_mean=-0.0095
+  r[0.050,0.066) n=48 ax_span=0.0141 ax_mean=-0.0068
+  r[0.066,0.083) n=77 ax_span=0.0728 ax_mean=0.0035
+  r[0.083,0.099) n=39 ax_span=0.0722 ax_mean=-0.0099
+  r[0.099,0.115) n=38 ax_span=0.0695 ax_mean=-0.0065
+  r[0.115,0.131) n=31 ax_span=0.0667 ax_mean=-0.0126
+  r[0.131,0.147) n=26 ax_span=0.0633 ax_mean=-0.0046
+  r[0.147,0.164) n=41 ax_span=0.0636 ax_mean=-0.0022
+  r[0.164,0.180) n=176 ax_span=0.2580 ax_mean=-0.0180
+  r[0.180,0.196) n=572 ax_span=0.2580 ax_mean=-0.0103
+  mat Wheel_GlossBlack face_r mean=0.1216 min=0.0170 max=0.1881 n=1031
+preview=/Users/sammy/Documents/GitHub/BeatTheMan/BlenderSource/F1/_chromedrift_inspect.png

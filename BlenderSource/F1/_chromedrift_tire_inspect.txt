@@ -1,0 +1,17 @@
+tire verts=355 faces=710
+r [0.1740,0.3681] x [-0.1498,0.1498] width=0.2995 diam=0.7361
+rim r [0.0014,0.1961] x [-0.1294,0.1287]
+=== tire radial bins (spin axis X) ===
+  r[0.174,0.193) n=63 x_span=0.2714 |x|_mean=0.1345
+  r[0.232,0.252) n=44 x_span=0.2995 |x|_mean=0.1485
+  r[0.252,0.271) n=20 x_span=0.2981 |x|_mean=0.1483
+  r[0.290,0.310) n=23 x_span=0.2735 |x|_mean=0.1355
+  r[0.310,0.329) n=41 x_span=0.2728 |x|_mean=0.1356
+  r[0.329,0.349) n=56 x_span=0.2243 |x|_mean=0.1107
+  r[0.349,0.368) n=355 x_span=0.2995 |x|_mean=0.1087
+=== faces by |normal.x| (sidewall vs tread) ===
+  sidewall n=384 r[0.198,0.338] mean_r=0.274 x[-0.145,0.145]
+  tread n=251 r[0.174,0.365] mean_r=0.312 x[-0.099,0.099]
+  shoulder n=75 r[0.344,0.357] mean_r=0.350 x[-0.099,0.098]
+UV u[0.011,0.847] v[0.011,0.912]
+sidewall_preview=/Users/sammy/Documents/GitHub/BeatTheMan/BlenderSource/F1/_chromedrift_sidewall.png

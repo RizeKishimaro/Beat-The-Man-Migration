@@ -1,0 +1,8 @@
+image=base_color 2048x2048
+red_texels=52426 dilated=84978 red_after=0
+png=/Users/sammy/Documents/GitHub/BeatTheMan/Assets/Objects/F1 Car/base_color_nodecal.png
+backup=/Users/sammy/Documents/GitHub/BeatTheMan/BlenderSource/F1/Meshy_AI_Fusion_XP_3000_Tire_0814081341_texture_BACKUP_pre_decal_strip.blend
+render=/Users/sammy/Documents/GitHub/BeatTheMan/Assets/Objects/F1 Car/_tire_nodecal_preview.png
+red_texels=52426 dilated=94599
+normal_png=/Users/sammy/Documents/GitHub/BeatTheMan/Assets/Objects/F1 Car/normal_nodecal.png
+render=/Users/sammy/Documents/GitHub/BeatTheMan/Assets/Objects/F1 Car/_tire_nodecal_preview.png

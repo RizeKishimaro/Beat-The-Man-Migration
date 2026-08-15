@@ -1,0 +1,4 @@
+image=base_color 2048x2048
+red_texels=52426 dilated=84978
+backup=/Users/sammy/Documents/GitHub/BeatTheMan/Assets/BlenderSource/F1/Meshy_AI_Fusion_XP_3000_Tire_0814081341_texture_BACKUP_pre_decal_strip.blend
+render=/Users/sammy/Documents/GitHub/BeatTheMan/Assets/Objects/F1 Car/_tire_nodecal_preview.png
