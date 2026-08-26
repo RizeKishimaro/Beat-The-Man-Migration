@@ -1,0 +1,59 @@
+{
+  "ticket": 152,
+  "note": "Island survey for verify-after-build. Production script was not changed: mesh_count>1 OR island_count>1 still HALTs. Meshy static props in this repo are almost never a single island.",
+  "results": [
+    {
+      "file": "Assets/Art/Items/Item_Crate_Base.fbx",
+      "mesh_count": 1,
+      "islands": 1,
+      "size_blender_xyz": [0.7, 0.7, 0.7],
+      "would_bake": true
+    },
+    {
+      "file": "Assets/_GridVerification/GridAxisTestCube.fbx",
+      "mesh_count": 1,
+      "islands": 1,
+      "size_blender_xyz": [1.0, 1.0, 1.0],
+      "would_bake": true
+    },
+    {
+      "file": "Assets/Objects/Meshy_AI_Cream_Cushioned_Woode_0805155347_texture_fbx/Meshy_AI_Cream_Cushioned_Woode_0805155347_texture.fbx",
+      "mesh_count": 1,
+      "islands": 10,
+      "size_blender_xyz": [0.5039, 0.582, 1.0],
+      "would_bake": false,
+      "keywords": []
+    },
+    {
+      "file": "Assets/Objects/Meshy_Chair_Unity/Meshy_Chair_Unity.fbx",
+      "mesh_count": 1,
+      "islands": 10,
+      "size_blender_xyz": [0.5039, 0.582, 1.0],
+      "would_bake": false,
+      "note": "Known-good manual chair would also HALT under the production safety net."
+    },
+    {
+      "file": "Assets/Vehicles/Meshy_AI_White_Formula_Racer_0803114154_texture_fbx > Reference/Meshy_AI_White_Formula_Racer_0803114154_texture.fbx",
+      "mesh_count": 1,
+      "islands": 7,
+      "size_blender_xyz": [1.899, 1.046, 0.763],
+      "would_bake": false,
+      "note": "Length ~1.9m is kart-ish, not a 5m F1; height 0.76m. Not a wildly-wrong-scale sample after the 100x importer fix."
+    },
+    {
+      "file": "Assets/Objects/F1 Car/F1_Body/F1_Body.fbx",
+      "mesh_count": 1,
+      "islands": 3,
+      "size_blender_xyz": [0.8635, 0.9973, 0.6891],
+      "would_bake": false,
+      "note": "Would HALT on islands. Authored AABB is ~1m, not real-world F1 (~5m). Script does not auto-rescale."
+    },
+    {
+      "file": "Assets/Objects/Furniture/Drawer_Cabinet/Drawer_Cabinet.fbx",
+      "mesh_count": 1,
+      "islands": 13,
+      "keywords": ["drawer", "cabinet"],
+      "would_bake": false
+    }
+  ]
+}

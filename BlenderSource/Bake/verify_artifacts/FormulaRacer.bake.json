@@ -1,0 +1,149 @@
+{
+  "ticket": 152,
+  "blender": "5.2.0 LTS",
+  "input": "Assets/Vehicles/Meshy_AI_White_Formula_Racer_0803114154_texture_fbx > Reference/Meshy_AI_White_Formula_Racer_0803114154_texture.fbx",
+  "output": "Assets/_Bake152/FormulaRacer/FormulaRacer.fbx",
+  "gui": false,
+  "background": true,
+  "steps": [
+    "units: METRIC scale_length=1.0 METERS",
+    "imported FBX",
+    "floor-origin: AABB bottom-center (Blender min-Z=0), then Apply All Transforms",
+    "export_scene.fbx axis_forward=-Z axis_up=Y global_scale=1 apply_unit_scale FBX_SCALE_ALL bake_space_transform path_mode=STRIP",
+    "copied 4 sibling PNG maps (not .fbm)"
+  ],
+  "reasons": [],
+  "keywords_matched": [],
+  "ok": true,
+  "mesh_count": 1,
+  "non_mesh": [],
+  "mesh_names": [
+    "Mesh_0"
+  ],
+  "world_bounds": {
+    "min": [
+      -0.95028,
+      -0.522197,
+      -0.382685
+    ],
+    "max": [
+      0.94872,
+      0.52397,
+      0.380531
+    ],
+    "size": [
+      1.899,
+      1.046167,
+      0.763216
+    ]
+  },
+  "before_floor_origin": {
+    "label": "before_floor_origin",
+    "objects": [
+      {
+        "name": "Mesh_0",
+        "type": "MESH",
+        "location": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rotation_euler_deg": [
+          -0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    ],
+    "world_bounds": {
+      "min": [
+        -0.95028,
+        -0.522197,
+        -0.382685
+      ],
+      "max": [
+        0.94872,
+        0.52397,
+        0.380531
+      ],
+      "size": [
+        1.899,
+        1.046167,
+        0.763216
+      ]
+    }
+  },
+  "after_floor_origin": {
+    "label": "after_floor_origin",
+    "objects": [
+      {
+        "name": "Mesh_0",
+        "type": "MESH",
+        "location": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rotation_euler_deg": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    ],
+    "world_bounds": {
+      "min": [
+        -0.9495,
+        -0.523084,
+        -0.0
+      ],
+      "max": [
+        0.9495,
+        0.523084,
+        0.763216
+      ],
+      "size": [
+        1.899,
+        1.046167,
+        0.763216
+      ]
+    }
+  },
+  "after_floor_origin_bounds": {
+    "min": [
+      -0.9495,
+      -0.523084,
+      -0.0
+    ],
+    "max": [
+      0.9495,
+      0.523084,
+      0.763216
+    ],
+    "size": [
+      1.899,
+      1.046167,
+      0.763216
+    ]
+  },
+  "output_exists": true,
+  "output_bytes": 26906524,
+  "textures_copied": [
+    "Assets/_Bake152/FormulaRacer/Meshy_AI_White_Formula_Racer_0803114154_texture.png",
+    "Assets/_Bake152/FormulaRacer/Meshy_AI_White_Formula_Racer_0803114154_texture_metallic.png",
+    "Assets/_Bake152/FormulaRacer/Meshy_AI_White_Formula_Racer_0803114154_texture_normal.png",
+    "Assets/_Bake152/FormulaRacer/Meshy_AI_White_Formula_Racer_0803114154_texture_roughness.png"
+  ],
+  "baked_fbx": true,
+  "note_scale": "1 Blender unit = 1m = 1 Unity unit as authored. This script does not rescale. Ticket 150 scale multiplier + pivot offset are Unity-side."
+}

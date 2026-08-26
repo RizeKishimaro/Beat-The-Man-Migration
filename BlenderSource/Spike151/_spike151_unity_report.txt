@@ -1,0 +1,55 @@
+=== Spike 151 Unity import verify ===
+Expect (GH5cYKPv): rotation (0,0,0), scale (1,1,1); bounds in metres.
+
+--- CRATE (known recipe-correct) ---
+path: Assets/Art/Items/Item_Crate_Base.fbx
+root.localEuler: (0, 0, 0)
+root.localScale: (1, 1, 1)
+root.localPos:   (0, 0, 0)
+renderer.bounds.size: (0.7, 0.7, 0.7)  (world AABB metres if scale=1)
+renderer.bounds.min:  (-0.35, 0, -0.35)
+renderer.bounds.max:  (0.35, 0.7, 0.35)
+mesh.bounds.size:     (0.7, 0.7, 0.7)
+mesh.bounds.center:   (0, 0.35, 0)
+CHECK rotation~0: True  scale~1: True
+importer globalScale=1 useFileScale=True
+
+--- RAW Meshy (no Blender) ---
+path: Assets/Objects/Meshy_AI_Cream_Cushioned_Woode_0805155347_texture_fbx/Meshy_AI_Cream_Cushioned_Woode_0805155347_texture.fbx
+root.localEuler: (270, 0, 0)
+root.localScale: (100, 100, 100)
+root.localPos:   (0, 0, 0)
+renderer.bounds.size: (0.5039, 1, 0.582)  (world AABB metres if scale=1)
+renderer.bounds.min:  (-0.25, -0.5, -0.291)
+renderer.bounds.max:  (0.2539, 0.5, 0.291)
+mesh.bounds.size:     (0.005, 0.0058, 0.01)
+mesh.bounds.center:   (0, 0, 0)
+CHECK rotation~0: False  scale~1: False
+importer globalScale=1 useFileScale=True
+
+--- KNOWN-GOOD manual Blender re-export ---
+path: Assets/Objects/Meshy_Chair_Unity/Meshy_Chair_Unity.fbx
+root.localEuler: (0, 0, 0)
+root.localScale: (1, 1, 1)
+root.localPos:   (0, 0, 0)
+renderer.bounds.size: (0.5039, 1, 0.582)  (world AABB metres if scale=1)
+renderer.bounds.min:  (-0.252, 0, -0.291)
+renderer.bounds.max:  (0.252, 1, 0.291)
+mesh.bounds.size:     (0.5039, 1, 0.582)
+mesh.bounds.center:   (0, 0.5, 0)
+CHECK rotation~0: True  scale~1: True
+importer globalScale=1 useFileScale=True
+
+--- HEADLESS bake (this spike) ---
+path: Assets/_Spike151/CreamChair_HeadlessBake/CreamChair_HeadlessBake.fbx
+root.localEuler: (0, 0, 0)
+root.localScale: (1, 1, 1)
+root.localPos:   (0, 0, 0)
+renderer.bounds.size: (0.5039, 1, 0.582)  (world AABB metres if scale=1)
+renderer.bounds.min:  (-0.25, -0.5, -0.291)
+renderer.bounds.max:  (0.2539, 0.5, 0.291)
+mesh.bounds.size:     (0.5039, 1, 0.582)
+mesh.bounds.center:   (0.002, 0, 0)
+CHECK rotation~0: True  scale~1: True
+importer globalScale=1 useFileScale=True
+

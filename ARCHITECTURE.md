@@ -5,9 +5,12 @@ Core architecture — classify every new asset/system as one of these five befor
 Source of truth: Trello "🧬 ARCHITECTURE" card — https://trello.com/c/flVvpCb2/52-%F0%9F%A7%AC-architecture-object-character-building-node
 This file should always mirror that card. If they ever disagree, Trello wins — update this file to match.
 
-Last synced: 2026-08-05
+Last synced: 2026-08-26
 
 Each type has a MASTER layer (shared Prefab/atom) + INDEPENDENT layer (per-instance overrides).
+
+## Standing Principle — Library Project (added 2026-08-07)
+Beat the Man is not just a standalone game, it is the core reusable engine/library that future games will branch off and depend on. Every system must be fully documented, atomized, and reusable beyond this specific game — no undocumented code, no one-off shortcuts. Each Master layer (per the Object/Character/Building/Node/Vehicle classification) is a permanent library component other projects will inherit via branch. Documentation and reusability are first-class requirements on every ticket.
 
 ## OBJECT
 Has physics, CAN be picked up/carried.

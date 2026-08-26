@@ -1,0 +1,151 @@
+{
+  "ticket": 152,
+  "blender": "5.2.0 LTS",
+  "input": "Assets/Art/Items/Item_Crate_Base.fbx",
+  "output": "Assets/_Bake152/Crate/Crate.fbx",
+  "gui": false,
+  "background": true,
+  "steps": [
+    "units: METRIC scale_length=1.0 METERS",
+    "imported FBX",
+    "floor-origin: AABB bottom-center (Blender min-Z=0), then Apply All Transforms",
+    "export_scene.fbx axis_forward=-Z axis_up=Y global_scale=1 apply_unit_scale FBX_SCALE_ALL bake_space_transform path_mode=STRIP",
+    "copied 0 sibling PNG maps (not .fbm)"
+  ],
+  "reasons": [],
+  "keywords_matched": [],
+  "ok": true,
+  "mesh_count": 1,
+  "non_mesh": [],
+  "mesh_names": [
+    "Item_Crate_Base"
+  ],
+  "island_count": 1,
+  "island_counts_per_mesh": [
+    {
+      "name": "Item_Crate_Base",
+      "islands": 1
+    }
+  ],
+  "world_bounds": {
+    "min": [
+      -0.35,
+      -0.35,
+      -0.0
+    ],
+    "max": [
+      0.35,
+      0.35,
+      0.7
+    ],
+    "size": [
+      0.7,
+      0.7,
+      0.7
+    ]
+  },
+  "before_floor_origin": {
+    "label": "before_floor_origin",
+    "objects": [
+      {
+        "name": "Item_Crate_Base",
+        "type": "MESH",
+        "location": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rotation_euler_deg": [
+          90.0,
+          -0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    ],
+    "world_bounds": {
+      "min": [
+        -0.35,
+        -0.35,
+        -0.0
+      ],
+      "max": [
+        0.35,
+        0.35,
+        0.7
+      ],
+      "size": [
+        0.7,
+        0.7,
+        0.7
+      ]
+    }
+  },
+  "after_floor_origin": {
+    "label": "after_floor_origin",
+    "objects": [
+      {
+        "name": "Item_Crate_Base",
+        "type": "MESH",
+        "location": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rotation_euler_deg": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    ],
+    "world_bounds": {
+      "min": [
+        -0.35,
+        -0.35,
+        -0.0
+      ],
+      "max": [
+        0.35,
+        0.35,
+        0.7
+      ],
+      "size": [
+        0.7,
+        0.7,
+        0.7
+      ]
+    }
+  },
+  "after_floor_origin_bounds": {
+    "min": [
+      -0.35,
+      -0.35,
+      -0.0
+    ],
+    "max": [
+      0.35,
+      0.35,
+      0.7
+    ],
+    "size": [
+      0.7,
+      0.7,
+      0.7
+    ]
+  },
+  "output_exists": true,
+  "output_bytes": 14924,
+  "textures_copied": [],
+  "baked_fbx": true,
+  "note_scale": "1 Blender unit = 1m = 1 Unity unit as authored. This script does not rescale. Ticket 150 scale multiplier + pivot offset are Unity-side."
+}

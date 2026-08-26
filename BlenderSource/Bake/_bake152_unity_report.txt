@@ -1,0 +1,159 @@
+=== Ticket 152 Unity import verify ===
+Expect: rotation (0,0,0), scale (1,1,1), floor min.y~0, sibling PNGs.
+
+--- KNOWN-GOOD manual chair ---
+path: Assets/Objects/Meshy_Chair_Unity/Meshy_Chair_Unity.fbx
+root.localEuler: (0, 0, 0)
+root.localScale: (1, 1, 1)
+root.localPos:   (0, 0, 0)
+renderer.bounds.size: (0.5039, 1, 0.582)
+renderer.bounds.min:  (-0.252, 0, -0.291)
+renderer.bounds.max:  (0.252, 1, 0.291)
+floor min.y~0: True
+CHECK rotation~0: True  scale~1: True
+importer globalScale=1 useFileScale=True
+
+--- RAW Meshy chair (no bake) ---
+path: Assets/Objects/Meshy_AI_Cream_Cushioned_Woode_0805155347_texture_fbx/Meshy_AI_Cream_Cushioned_Woode_0805155347_texture.fbx
+root.localEuler: (270, 0, 0)
+root.localScale: (100, 100, 100)
+root.localPos:   (0, 0, 0)
+renderer.bounds.size: (0.5039, 1, 0.582)
+renderer.bounds.min:  (-0.25, -0.5, -0.291)
+renderer.bounds.max:  (0.2539, 0.5, 0.291)
+floor min.y~0: False
+CHECK rotation~0: False  scale~1: False
+importer globalScale=1 useFileScale=True
+
+--- BAKED cream chair (152) ---
+path: Assets/_Bake152/CreamChair/CreamChair.fbx
+root.localEuler: (0, 0, 0)
+root.localScale: (1, 1, 1)
+root.localPos:   (0, 0, 0)
+renderer.bounds.size: (0.5039, 1, 0.582)
+renderer.bounds.min:  (-0.252, 0, -0.291)
+renderer.bounds.max:  (0.252, 1, 0.291)
+floor min.y~0: True
+CHECK rotation~0: True  scale~1: True
+importer globalScale=1 useFileScale=True
+
+sibling PNGs next to Assets/_Bake152/CreamChair/CreamChair.fbx:
+  Meshy_AI_Cream_Cushioned_Woode_0805155347_texture.png
+  Meshy_AI_Cream_Cushioned_Woode_0805155347_texture_emission.png
+  Meshy_AI_Cream_Cushioned_Woode_0805155347_texture_metallic.png
+  Meshy_AI_Cream_Cushioned_Woode_0805155347_texture_normal.png
+  Meshy_AI_Cream_Cushioned_Woode_0805155347_texture_roughness.png
+
+--- RAW Formula Racer (no bake) ---
+path: Assets/Vehicles/Meshy_AI_White_Formula_Racer_0803114154_texture_fbx > Reference/Meshy_AI_White_Formula_Racer_0803114154_texture.fbx
+root.localEuler: (270, 0, 0)
+root.localScale: (100, 100, 100)
+root.localPos:   (0, 0, 0)
+renderer.bounds.size: (1.899, 0.7632, 1.0462)
+renderer.bounds.min:  (-0.9487, -0.3827, -0.524)
+renderer.bounds.max:  (0.9503, 0.3805, 0.5222)
+floor min.y~0: False
+CHECK rotation~0: False  scale~1: False
+importer globalScale=1 useFileScale=True
+
+--- BAKED Formula Racer (152) ---
+path: Assets/_Bake152/FormulaRacer/FormulaRacer.fbx
+root.localEuler: (0, 0, 0)
+root.localScale: (1, 1, 1)
+root.localPos:   (0, 0, 0)
+renderer.bounds.size: (1.899, 0.7632, 1.0462)
+renderer.bounds.min:  (-0.9495, 0, -0.5231)
+renderer.bounds.max:  (0.9495, 0.7632, 0.5231)
+floor min.y~0: True
+CHECK rotation~0: True  scale~1: True
+importer globalScale=1 useFileScale=True
+
+sibling PNGs next to Assets/_Bake152/FormulaRacer/FormulaRacer.fbx:
+  Meshy_AI_White_Formula_Racer_0803114154_texture.png
+  Meshy_AI_White_Formula_Racer_0803114154_texture_metallic.png
+  Meshy_AI_White_Formula_Racer_0803114154_texture_normal.png
+  Meshy_AI_White_Formula_Racer_0803114154_texture_roughness.png
+
+--- BAKED crate (floor-origin) ---
+path: Assets/_Bake152/Crate/Crate.fbx
+root.localEuler: (0, 0, 0)
+root.localScale: (1, 1, 1)
+root.localPos:   (0, 0, 0)
+renderer.bounds.size: (0.7, 0.7, 0.7)
+renderer.bounds.min:  (-0.35, 0, -0.35)
+renderer.bounds.max:  (0.35, 0.7, 0.35)
+floor min.y~0: True
+CHECK rotation~0: True  scale~1: True
+importer globalScale=1 useFileScale=True
+
+--- BAKED GridAxisTestCube (XY-recenter) ---
+path: Assets/_Bake152/TestCube/TestCube.fbx
+root.localEuler: (0, 0, 0)
+root.localScale: (1, 1, 1)
+root.localPos:   (0, 0, 0)
+renderer.bounds.size: (1, 1, 1)
+renderer.bounds.min:  (-0.5, 0, -0.5)
+renderer.bounds.max:  (0.5, 1, 0.5)
+floor min.y~0: True
+CHECK rotation~0: True  scale~1: True
+importer globalScale=1 useFileScale=True
+
+--- BAKED centered default cube (min.y should become 0) ---
+path: Assets/_Bake152/CenteredCube/CenteredCube.fbx
+root.localEuler: (0, 0, 0)
+root.localScale: (1, 1, 1)
+root.localPos:   (0, 0, 0)
+renderer.bounds.size: (2, 2, 2)
+renderer.bounds.min:  (-1, 0, -1)
+renderer.bounds.max:  (1, 2, 1)
+floor min.y~0: True
+CHECK rotation~0: True  scale~1: True
+importer globalScale=1 useFileScale=True
+
+--- cream chair should NOT be in _Review after bake ---
+stale chair NEEDS_REVIEW.json exists: False
+--- SAFETY NET: Drawer_Cabinet ---
+NEEDS_REVIEW.json exists: True
+original FBX copied:      True
+baked FBX at review path: False
+{
+  "ticket": 152,
+  "status": "needs_review",
+  "input": "Assets/Objects/Furniture/Drawer_Cabinet/Drawer_Cabinet.fbx",
+  "review_dir": "Assets/Objects/_Review/Drawer_Cabinet",
+  "reasons": [
+    "keyword:cabinet",
+    "keyword:drawer"
+  ],
+  "keywords_matched": [
+    "cabinet",
+    "drawer"
+  ],
+  "mesh_count": 1,
+  "mesh_names": [
+    "Drawer_Cabinet"
+  ],
+  "world_bounds": {
+    "min": [
+      -0.5,
+      -0.5,
+      -0.0
+    ],
+    "max": [
+      0.5,
+      0.5,
+      1.0
+    ],
+    "size": [
+      1.0,
+      1.0,
+      1.0
+    ]
+  },
+  "copied": [
+    "Assets/Objects/_Review/Drawer_Cabinet/Drawer_Cabinet.fbx"
+  ],
+  "baked_fbx": false,
+  "halted": true
+}
+

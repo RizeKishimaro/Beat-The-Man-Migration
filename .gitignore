@@ -67,5 +67,33 @@ crashlytics-build.properties
 *FusionXP*
 *Fusion_XP_3000*
 
+# Ticket 148 drop zone — keep folder placeholders, ignore dropped files.
+/Assets/Objects/_Incoming/Pickable/**
+!/Assets/Objects/_Incoming/Pickable/.gitkeep
+!/Assets/Objects/_Incoming/Pickable/.gitkeep.meta
+/Assets/Objects/_Incoming/Nodes/**
+!/Assets/Objects/_Incoming/Nodes/.gitkeep
+!/Assets/Objects/_Incoming/Nodes/.gitkeep.meta
+
+# Ticket 152 safety-net landing — keep folder placeholder, ignore flagged copies.
+/Assets/Objects/_Review/**
+!/Assets/Objects/_Review/.gitkeep
+!/Assets/Objects/_Review/.gitkeep.meta
+
+# Ticket 152 bake verify outputs (regenerable; includes copied texture maps).
+/Assets/_Bake152/**
+!/Assets/_Bake152/.gitkeep
+!/Assets/_Bake152/.gitkeep.meta
+
+# Ticket 153 raw drop — outside Assets/, ignore dropped files.
+/Drop/Pickable/**
+!/Drop/Pickable/.gitkeep
+/Drop/Nodes/**
+!/Drop/Nodes/.gitkeep
+/Drop/_Unpacked/
+/Drop/_BakeOut/
+/Drop/_NeedsReview/
+/Drop/_Processed/
+
 # macOS
 .DS_Store

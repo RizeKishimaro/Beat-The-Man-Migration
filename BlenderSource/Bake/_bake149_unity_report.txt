@@ -1,0 +1,54 @@
+=== Ticket 149 CreamChair_Raw153 verify ===
+folder: Assets/Objects/Pickable/CreamChair_Raw153
+--- Properties SO ---
+path: Assets/Objects/Pickable/CreamChair_Raw153/CreamChair_Raw153_Properties.asset
+exists: True
+objectName: CreamChair_Raw153
+folder: CreamChair_Raw153
+kind: Pickable
+pickupable: True
+approved: False
+weight: 0
+price: 0
+category: ''
+stackable: Unset
+sizeTier: Unset
+physicsGravity: Unset
+scaleMultiplier: 1
+pivotOffset: (0.00, 0.00, 0.00)
+CHECK so: True
+--- Stub ---
+path: Assets/Objects/Pickable/CreamChair_Raw153/CreamChair_Raw153.cs
+exists: True
+CHECK stub ImportedPickable (not CarryableItem): True
+--- Material ---
+path: Assets/Objects/Pickable/CreamChair_Raw153/CreamChair_Raw153.mat
+exists: True
+shader: Universal Render Pipeline/Lit
+_BaseMap: Meshy_AI_Cream_Cushioned_Woode_0805155347_texture
+_BumpMap: Meshy_AI_Cream_Cushioned_Woode_0805155347_texture_normal
+_MetallicGlossMap: CreamChair_Raw153_Mask
+_EmissionMap: Meshy_AI_Cream_Cushioned_Woode_0805155347_texture_emission
+keyword _NORMALMAP: True
+keyword _METALLICSPECGLOSSMAP: True
+keyword _EMISSION: True
+_Metallic: 1
+_Smoothness: 1
+_EmissionColor: RGBA(1.000, 1.000, 1.000, 1.000)
+CHECK mat URP Lit + maps + mask: True
+--- Mask ---
+path: Assets/Objects/Pickable/CreamChair_Raw153/CreamChair_Raw153_Mask.png
+exists: True
+importer sRGB=False type=Default (expect False / Default)
+CHECK mask: True
+--- FBX remap ---
+fbx: Assets/Objects/Pickable/CreamChair_Raw153/Meshy_AI_Cream_Cushioned_Woode_0805155347_texture.fbx
+renderer.sharedMaterial: CreamChair_Raw153
+renderer.shader: Universal Render Pipeline/Lit
+renderer _MetallicGlossMap: CreamChair_Raw153_Mask
+externalObjectMap count: 2
+  remap UnityEngine.Material 'CreamChair_Raw153' -> CreamChair_Raw153
+  remap UnityEngine.Material 'Material.001' -> CreamChair_Raw153
+CHECK remap: True
+
+RESULT=OK

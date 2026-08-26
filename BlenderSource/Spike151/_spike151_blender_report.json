@@ -1,0 +1,104 @@
+{
+  "ticket": 151,
+  "blender": "5.2.0 LTS",
+  "input": "Assets/Objects/Meshy_AI_Cream_Cushioned_Woode_0805155347_texture_fbx/Meshy_AI_Cream_Cushioned_Woode_0805155347_texture.fbx",
+  "output": "Assets/_Spike151/CreamChair_HeadlessBake/CreamChair_HeadlessBake.fbx",
+  "gui": false,
+  "background": true,
+  "steps": [
+    "units: METRIC scale_length=1.0 METERS",
+    "imported raw Meshy FBX",
+    "Object \u2192 Apply \u2192 All Transforms (location+rotation+scale)",
+    "export_scene.fbx axis_forward=-Z axis_up=Y global_scale=1 apply_unit_scale FBX_SCALE_ALL bake_space_transform"
+  ],
+  "flags": [
+    "PIVOT/FLOOR: origin is not at the mesh floor (world min-Z = -0.5000, not ~0). Manual recipe 'position it' is a judgment call \u2014 not automated."
+  ],
+  "ok": true,
+  "mesh_count": 1,
+  "non_mesh": [],
+  "before_apply": {
+    "label": "before_apply_all_transforms",
+    "objects": [
+      {
+        "name": "mesh_node",
+        "type": "MESH",
+        "location": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rotation_euler_deg": [
+          -0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    ],
+    "world_bounds": {
+      "min": [
+        -0.253906,
+        -0.291016,
+        -0.5
+      ],
+      "max": [
+        0.25,
+        0.291016,
+        0.5
+      ],
+      "size": [
+        0.503906,
+        0.582032,
+        1.0
+      ]
+    }
+  },
+  "after_apply": {
+    "label": "after_apply_all_transforms",
+    "objects": [
+      {
+        "name": "mesh_node",
+        "type": "MESH",
+        "location": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rotation_euler_deg": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    ],
+    "world_bounds": {
+      "min": [
+        -0.253906,
+        -0.291016,
+        -0.5
+      ],
+      "max": [
+        0.25,
+        0.291016,
+        0.5
+      ],
+      "size": [
+        0.503906,
+        0.582032,
+        1.0
+      ]
+    }
+  },
+  "output_exists": true,
+  "output_bytes": 56460
+}

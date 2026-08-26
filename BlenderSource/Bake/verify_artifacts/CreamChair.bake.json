@@ -1,0 +1,150 @@
+{
+  "ticket": 152,
+  "blender": "5.2.0 LTS",
+  "input": "Assets/Objects/Meshy_AI_Cream_Cushioned_Woode_0805155347_texture_fbx/Meshy_AI_Cream_Cushioned_Woode_0805155347_texture.fbx",
+  "output": "Assets/_Bake152/CreamChair/CreamChair.fbx",
+  "gui": false,
+  "background": true,
+  "steps": [
+    "units: METRIC scale_length=1.0 METERS",
+    "imported FBX",
+    "floor-origin: AABB bottom-center (Blender min-Z=0), then Apply All Transforms",
+    "export_scene.fbx axis_forward=-Z axis_up=Y global_scale=1 apply_unit_scale FBX_SCALE_ALL bake_space_transform path_mode=STRIP",
+    "copied 5 sibling PNG maps (not .fbm)"
+  ],
+  "reasons": [],
+  "keywords_matched": [],
+  "ok": true,
+  "mesh_count": 1,
+  "non_mesh": [],
+  "mesh_names": [
+    "mesh_node"
+  ],
+  "world_bounds": {
+    "min": [
+      -0.253906,
+      -0.291016,
+      -0.5
+    ],
+    "max": [
+      0.25,
+      0.291016,
+      0.5
+    ],
+    "size": [
+      0.503906,
+      0.582032,
+      1.0
+    ]
+  },
+  "before_floor_origin": {
+    "label": "before_floor_origin",
+    "objects": [
+      {
+        "name": "mesh_node",
+        "type": "MESH",
+        "location": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rotation_euler_deg": [
+          -0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    ],
+    "world_bounds": {
+      "min": [
+        -0.253906,
+        -0.291016,
+        -0.5
+      ],
+      "max": [
+        0.25,
+        0.291016,
+        0.5
+      ],
+      "size": [
+        0.503906,
+        0.582032,
+        1.0
+      ]
+    }
+  },
+  "after_floor_origin": {
+    "label": "after_floor_origin",
+    "objects": [
+      {
+        "name": "mesh_node",
+        "type": "MESH",
+        "location": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rotation_euler_deg": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    ],
+    "world_bounds": {
+      "min": [
+        -0.251953,
+        -0.291016,
+        0.0
+      ],
+      "max": [
+        0.251953,
+        0.291016,
+        1.0
+      ],
+      "size": [
+        0.503906,
+        0.582032,
+        1.0
+      ]
+    }
+  },
+  "after_floor_origin_bounds": {
+    "min": [
+      -0.251953,
+      -0.291016,
+      0.0
+    ],
+    "max": [
+      0.251953,
+      0.291016,
+      1.0
+    ],
+    "size": [
+      0.503906,
+      0.582032,
+      1.0
+    ]
+  },
+  "output_exists": true,
+  "output_bytes": 55644,
+  "textures_copied": [
+    "Assets/_Bake152/CreamChair/Meshy_AI_Cream_Cushioned_Woode_0805155347_texture.png",
+    "Assets/_Bake152/CreamChair/Meshy_AI_Cream_Cushioned_Woode_0805155347_texture_emission.png",
+    "Assets/_Bake152/CreamChair/Meshy_AI_Cream_Cushioned_Woode_0805155347_texture_metallic.png",
+    "Assets/_Bake152/CreamChair/Meshy_AI_Cream_Cushioned_Woode_0805155347_texture_normal.png",
+    "Assets/_Bake152/CreamChair/Meshy_AI_Cream_Cushioned_Woode_0805155347_texture_roughness.png"
+  ],
+  "baked_fbx": true,
+  "note_scale": "1 Blender unit = 1m = 1 Unity unit as authored. This script does not rescale. Ticket 150 scale multiplier + pivot offset are Unity-side."
+}

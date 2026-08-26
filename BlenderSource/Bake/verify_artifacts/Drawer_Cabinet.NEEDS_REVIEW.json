@@ -1,0 +1,40 @@
+{
+  "ticket": 152,
+  "status": "needs_review",
+  "input": "Assets/Objects/Furniture/Drawer_Cabinet/Drawer_Cabinet.fbx",
+  "review_dir": "Assets/Objects/_Review/Drawer_Cabinet",
+  "reasons": [
+    "keyword:cabinet",
+    "keyword:drawer"
+  ],
+  "keywords_matched": [
+    "cabinet",
+    "drawer"
+  ],
+  "mesh_count": 1,
+  "mesh_names": [
+    "Drawer_Cabinet"
+  ],
+  "world_bounds": {
+    "min": [
+      -0.5,
+      -0.5,
+      -0.0
+    ],
+    "max": [
+      0.5,
+      0.5,
+      1.0
+    ],
+    "size": [
+      1.0,
+      1.0,
+      1.0
+    ]
+  },
+  "copied": [
+    "Assets/Objects/_Review/Drawer_Cabinet/Drawer_Cabinet.fbx"
+  ],
+  "baked_fbx": false,
+  "halted": true
+}
