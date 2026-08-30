@@ -1,0 +1,30 @@
+=== Ticket 155 CreamChair_Raw153 verify ===
+--- Existing 149/150 fields (must be unchanged) ---
+objectName: CreamChair_Raw153
+kind: Pickable
+pickupable: True
+approved: False
+weight: 0
+price: 0
+category: ''
+stackable: Unset
+sizeTier: Unset
+physicsGravity: Unset
+scaleMultiplier: 1
+pivotOffset: (0.00, 0.00, 0.00)
+CHECK existing 149/150 unchanged: True
+--- New 155 fields (must be blank/unset) ---
+interaction: Unset
+placementMethod: Unset
+nodeCompat: None (0)
+animationClips nullOrEmpty: True
+animatorController: null
+sfx.pickup: null
+sfx.drop: null
+sfx.use: null
+sfx.open: null
+sfx.custom: null
+uniqueProperties.Count: 0
+CHECK new fields blank/unset: True
+CHECK ObjectPropertiesEditor: True
+PASS=True

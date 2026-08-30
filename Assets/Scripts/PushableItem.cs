@@ -39,7 +39,7 @@ public class PushableItem : MonoBehaviour
         body.mass = mass;
         body.linearDamping = linearDamping;
         body.angularDamping = angularDamping;
-        body.useGravity = true;
+        // useGravity is authored on the prefab (ticket 156 physicsGravity) — do not force it here.
         body.isKinematic = false;
         body.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         body.interpolation = RigidbodyInterpolation.Interpolate;

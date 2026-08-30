@@ -17,6 +17,7 @@ MonoBehaviour:
   kind: 0
   pickupable: 1
   approved: 0
+  prefabPath: 
   weight: 0
   price: 0
   category: 
@@ -25,3 +26,15 @@ MonoBehaviour:
   physicsGravity: 0
   scaleMultiplier: 1
   pivotOffset: {x: 0, y: 0, z: 0}
+  interaction: 0
+  placementMethod: 0
+  nodeCompat: 0
+  animationClips: []
+  animatorController: {fileID: 0}
+  sfx:
+    pickup: {fileID: 0}
+    drop: {fileID: 0}
+    use: {fileID: 0}
+    open: {fileID: 0}
+    custom: {fileID: 0}
+  uniqueProperties: []

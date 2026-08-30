@@ -1,0 +1,29 @@
+=== Ticket 156 CreamChair_Raw153 verify ===
+--- Baseline ---
+prefabAbsentBefore: True
+--- After Approve ---
+builtPath: Assets/Objects/Pickable/CreamChair_Raw153/CreamChair_Raw153.prefab
+props.prefabPath: Assets/Objects/Pickable/CreamChair_Raw153/CreamChair_Raw153.prefab
+props.approved: True
+prefabExists: True
+hierarchy Wrapper/Mesh: True
+mass: 1 (want 1)
+useGravity: True
+CarryableItem: True
+PushableItem: True
+BoxCollider: True
+GridFootprint Object: True
+stub+properties: True
+CHECK approve builds working prefab: True
+--- After Unapprove ---
+prefabExists: False
+props.prefabPath: ''
+CHECK unapprove deletes prefab: True
+--- Weight/gravity override ---
+mass: 4.5
+useGravity: False
+CHECK weight=4.5 gravity=Off: True
+--- Restored pending baseline ---
+prefabAbsent: True
+approved: False
+PASS=True

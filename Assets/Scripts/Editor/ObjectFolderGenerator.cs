@@ -196,6 +196,15 @@ public class ObjectFolderGenerator : AssetPostprocessor
         so.physicsGravity = ObjectPhysicsGravity.Unset;
         so.scaleMultiplier = 1f;
         so.pivotOffset = Vector3.zero;
+        so.prefabPath = "";
+        // Ticket 155 — leave judgment blanks unset; do not guess.
+        so.interaction = ObjectInteraction.Unset;
+        so.placementMethod = ObjectPlacementMethod.Unset;
+        so.nodeCompat = ObjectNodeCompat.None;
+        so.animationClips = null;
+        so.animatorController = null;
+        so.sfx = default;
+        so.uniqueProperties = new System.Collections.Generic.List<ObjectUniqueEntry>();
         AssetDatabase.CreateAsset(so, path);
         return "properties=created ";
     }

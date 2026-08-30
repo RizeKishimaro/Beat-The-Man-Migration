@@ -1,0 +1,19 @@
+=== Ticket 150 CreamChair_Raw153 verify ===
+--- Pending Review before approve ---
+awaitingContainsCreamChair: True
+CountPending total: 2
+--- Live preview ---
+previewRoot: ObjectReviewPreview_CreamChair_Raw153
+wrapperScale: (1.500, 1.500, 1.500)
+meshLocalPos: (0.100, 0.000, -0.200)
+afterLiveUpdate wrapperScale: (2.000, 2.000, 2.000)
+afterLiveUpdate meshLocalPos: (0.000, 0.250, 0.000)
+CHECK preview scale/pivot: True
+--- Pending Review after approve ---
+approved: True
+awaitingContainsCreamChair: False
+CHECK approve clears panel row: True
+--- Restored pending baseline ---
+approved: False
+awaitingContainsCreamChair: True
+PASS=True
