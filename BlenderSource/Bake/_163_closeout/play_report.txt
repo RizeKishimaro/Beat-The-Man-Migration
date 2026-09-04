@@ -1,0 +1,14 @@
+=== Ticket 163 Play shot ===
+scene=Assets/Scenes/GridFoundation.unity
+camera=Main Camera tag=MainCamera
+spawned at (2.20, 0.00, 2.20) size=(1.36, 1.50, 1.37)
+tris=1499 verts=1612
+mat=Meshy_AI_Cream_Cushioned_Woode_0902130031_texture_fbx shader=Universal Render Pipeline/Lit
+baseMap=True
+camera posed at (-0.30, 2.95, -0.30)
+entering Play
+resumed in Play
+play shot 1000x631 bytes=369055
+Camera.main=Main Camera
+spawned=True
+RESULT=OK inspect play.png

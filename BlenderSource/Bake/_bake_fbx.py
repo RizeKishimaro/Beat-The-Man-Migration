@@ -7,13 +7,19 @@ are copied next to the output (not via an .fbm folder).
 
 Run (no GUI, not BlenderMCP):
   blender --background --python BlenderSource/Bake/_bake_fbx.py -- \\
-    --input <fbx> --output <fbx>
+    --input <fbx> --output <fbx> [--decimate] [--kind Pickable|Nodes] [--target-tris N]
+
+Ticket 163: --decimate is opt-in (Drop/Decimate/{Pickable,Nodes} only).
+Light cleanup (merge / fill holes / recalc normals) then Collapse to
+target_tris. Voxel Remesh is parked — it destroys UVs.
+Normal Drop/{Pickable,Nodes} must omit --decimate — same bake as pre-163.
 
 Exit codes:
   0  baked
   1  error (missing input, no meshes, export failed)
-  2  safety net: copied unmodified source to Assets/Objects/_Review/<stem>/
-     and wrote NEEDS_REVIEW.json — no baked FBX
+  2  safety net: keyword, mesh_count > 1, or 163 Collapse stall
+     (tris_after > target_tris * stall_multiple). Copies unmodified source
+     to Assets/Objects/_Review/<stem>/ and writes NEEDS_REVIEW.json — no baked FBX
 
 Safety net HALTs only on moving-part keywords or mesh_object_count > 1.
 Island count is not a trigger (Meshy static props routinely have 10+ islands).
@@ -28,9 +34,14 @@ import shutil
 import sys
 
 import bpy
+import bmesh
 from mathutils import Vector
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+if HERE not in sys.path:
+    sys.path.insert(0, HERE)
+import _decimate_math as decimate_math
+
 ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
 DEFAULT_REVIEW_ROOT = os.path.join(ROOT, "Assets", "Objects", "_Review")
 
@@ -101,6 +112,9 @@ def parse_args():
     inp = None
     out = None
     review_root = DEFAULT_REVIEW_ROOT
+    decimate = False
+    target_tris = None
+    kind = None
     i = 0
     while i < len(args):
         if args[i] == "--input" and i + 1 < len(args):
@@ -115,9 +129,21 @@ def parse_args():
             review_root = args[i + 1]
             i += 2
             continue
+        if args[i] == "--decimate":
+            decimate = True
+            i += 1
+            continue
+        if args[i] == "--target-tris" and i + 1 < len(args):
+            target_tris = int(args[i + 1])
+            i += 2
+            continue
+        if args[i] == "--kind" and i + 1 < len(args):
+            kind = args[i + 1]
+            i += 2
+            continue
         i += 1
     if not inp or not out:
-        print("BAKE_FAIL usage: --input <fbx> --output <fbx> [--review-root <dir>]")
+        print("BAKE_FAIL usage: --input <fbx> --output <fbx> [--review-root <dir>] [--decimate] [--kind Pickable|Nodes] [--target-tris N]")
         sys.exit(1)
     if not os.path.isabs(inp):
         inp = os.path.join(ROOT, inp)
@@ -125,7 +151,14 @@ def parse_args():
         out = os.path.join(ROOT, out)
     if not os.path.isabs(review_root):
         review_root = os.path.join(ROOT, review_root)
-    return os.path.abspath(inp), os.path.abspath(out), os.path.abspath(review_root)
+    return (
+        os.path.abspath(inp),
+        os.path.abspath(out),
+        os.path.abspath(review_root),
+        decimate,
+        target_tris,
+        kind,
+    )
 
 
 def rel(path):
@@ -285,6 +318,219 @@ def write_json(path, payload):
         f.write("\n")
 
 
+def tri_count(meshes):
+    total = 0
+    for obj in meshes:
+        if obj.type != "MESH" or obj.data is None:
+            continue
+        obj.data.calc_loop_triangles()
+        total += len(obj.data.loop_triangles)
+    return total
+
+
+def vert_count(meshes):
+    return sum(len(o.data.vertices) for o in meshes if o.type == "MESH" and o.data)
+
+
+def edge_topology(meshes):
+    boundary = 0
+    nonmanifold = 0
+    for obj in meshes:
+        if obj.type != "MESH" or obj.data is None:
+            continue
+        bm = bmesh.new()
+        try:
+            bm.from_mesh(obj.data)
+            bm.edges.ensure_lookup_table()
+            for e in bm.edges:
+                if e.is_boundary:
+                    boundary += 1
+                if not e.is_manifold:
+                    nonmanifold += 1
+        finally:
+            bm.free()
+    return {"boundary_edges": boundary, "nonmanifold_edges": nonmanifold}
+
+
+def uv_layer_count(meshes):
+    n = 0
+    for obj in meshes:
+        if obj.type == "MESH" and obj.data is not None:
+            n += len(obj.data.uv_layers)
+    return n
+
+
+def apply_light_cleanup(meshes, merge_dist, report):
+    """Merge by Distance + Fill Holes + consistent normals. Keeps UVs."""
+    if bpy.context.object and bpy.context.object.mode != "OBJECT":
+        bpy.ops.object.mode_set(mode="OBJECT")
+    merge_op = "merge_by_distance"
+    for obj in meshes:
+        if obj.type != "MESH":
+            continue
+        bpy.ops.object.select_all(action="DESELECT")
+        obj.select_set(True)
+        bpy.context.view_layer.objects.active = obj
+        bpy.ops.object.mode_set(mode="EDIT")
+        bpy.ops.mesh.select_all(action="SELECT")
+        try:
+            bpy.ops.mesh.merge_by_distance(threshold=merge_dist)
+        except Exception:
+            bpy.ops.mesh.remove_doubles(threshold=merge_dist)
+            merge_op = "remove_doubles"
+        bpy.ops.mesh.fill_holes(sides=0)
+        bpy.ops.mesh.normals_make_consistent(inside=False)
+        bpy.ops.object.mode_set(mode="OBJECT")
+    report["decimate"]["light_cleanup"] = {
+        "merge_op": merge_op,
+        "merge_dist": merge_dist,
+        "fill_holes": True,
+        "normals_make_consistent": True,
+    }
+
+
+def apply_voxel_remesh(meshes, voxel_size, report):
+    """Parked. Rebuilds topology and wipes UVs. Do not call from 163."""
+    if bpy.context.object and bpy.context.object.mode != "OBJECT":
+        bpy.ops.object.mode_set(mode="OBJECT")
+    for obj in meshes:
+        if obj.type != "MESH":
+            continue
+        bpy.context.view_layer.objects.active = obj
+        obj.select_set(True)
+        mod = obj.modifiers.new(name="Ticket163_VoxelRemesh", type="REMESH")
+        mod.mode = "VOXEL"
+        mod.voxel_size = voxel_size
+        if hasattr(mod, "adaptivity"):
+            mod.adaptivity = 0.0
+        bpy.ops.object.modifier_apply(modifier=mod.name)
+        report["modifiers"].append(
+            {"object": obj.name, "type": "REMESH", "mode": "VOXEL", "voxel_size": voxel_size}
+        )
+
+
+def apply_decimate_to_target(meshes, target_tris, report):
+    current = tri_count(meshes)
+    report["decimate_before_tris"] = current
+    if current <= 0:
+        report["decimate_skipped"] = "no triangles"
+        return
+    if current <= target_tris:
+        report["decimate_skipped"] = "already at or below target"
+        report["decimate_ratio"] = 1.0
+        return
+    ratio = max(0.0001, min(1.0, float(target_tris) / float(current)))
+    report["decimate_ratio"] = ratio
+    if bpy.context.object and bpy.context.object.mode != "OBJECT":
+        bpy.ops.object.mode_set(mode="OBJECT")
+    for obj in meshes:
+        if obj.type != "MESH":
+            continue
+        bpy.context.view_layer.objects.active = obj
+        obj.select_set(True)
+        mod = obj.modifiers.new(name="Ticket163_Decimate", type="DECIMATE")
+        mod.decimate_type = "COLLAPSE"
+        mod.ratio = ratio
+        mod.use_collapse_triangulate = False
+        bpy.ops.object.modifier_apply(modifier=mod.name)
+        report["modifiers"].append(
+            {
+                "object": obj.name,
+                "type": "DECIMATE",
+                "mode": "COLLAPSE",
+                "ratio": ratio,
+                "target_tris": target_tris,
+            }
+        )
+
+
+def run_decimate_stage(meshes, report, target_tris_override, kind=None):
+    cfg = decimate_math.load_decimate_config()
+    target = decimate_math.resolve_target_tris(kind, target_tris_override)
+    bounds = mesh_world_bounds(meshes)
+    size = bounds["size"] if bounds else [0, 0, 0]
+    longest = max(size) if size else 0.0
+    report["decimate"] = {
+        "enabled": True,
+        "recipe": "light_cleanup_then_collapse",
+        "voxel_remesh": False,
+        "voxel_remesh_note": (
+            "Parked: Voxel Remesh destroys UVs. 2026-09-02 probe on the 3.05M "
+            "Meshy drop: Collapse alone hit 2899 tris with UVs intact "
+            "(topology was 2 boundary / 3 non-manifold, not the spike's 6303/3837)."
+        ),
+        "target_tris": target,
+        "target_tris_kind": kind,
+        "target_tris_flagged_for_sam": False,
+        "target_tris_note": (
+            "JSON target_tris / target_tris_pickable / target_tris_nodes "
+            "(Drop folder chooses category). Override with --target-tris."
+        ),
+        "longest_aabb_m": longest,
+        "topology_before": edge_topology(meshes),
+        "tris_raw": tri_count(meshes),
+        "verts_raw": vert_count(meshes),
+        "uv_layers_raw": uv_layer_count(meshes),
+    }
+    topo = report["decimate"]["topology_before"]
+    raw_tris = report["decimate"]["tris_raw"]
+    already_simple = (
+        raw_tris <= target
+        and topo.get("boundary_edges", 0) == 0
+        and topo.get("nonmanifold_edges", 0) == 0
+    )
+    if already_simple:
+        report["decimate"]["skipped"] = "already <= target and manifold"
+        report["decimate"]["tris_after_decimate"] = raw_tris
+        report["steps"].append(
+            "163 skip remesh/decimate (tris=%d <= target=%d, manifold)"
+            % (raw_tris, target)
+        )
+        return
+
+    report["modifiers"] = []
+    apply_light_cleanup(meshes, 0.0001, report)
+    report["decimate"]["topology_after_cleanup"] = edge_topology(meshes)
+    report["decimate"]["tris_after_cleanup"] = tri_count(meshes)
+    report["decimate"]["uv_layers_after_cleanup"] = uv_layer_count(meshes)
+    report["steps"].append(
+        "163 light cleanup (merge 0.0001, fill holes, recalc normals) → %d tris, uv_layers=%d"
+        % (
+            report["decimate"]["tris_after_cleanup"],
+            report["decimate"]["uv_layers_after_cleanup"],
+        )
+    )
+    apply_decimate_to_target(meshes, target, report)
+    report["decimate"]["tris_after_decimate"] = tri_count(meshes)
+    report["decimate"]["verts_after_decimate"] = vert_count(meshes)
+    report["decimate"]["topology_after_decimate"] = edge_topology(meshes)
+    report["decimate"]["uv_layers_after_decimate"] = uv_layer_count(meshes)
+    report["steps"].append(
+        "163 decimate COLLAPSE target=%d ratio=%s → %d tris uv_layers=%d"
+        % (
+            target,
+            report.get("decimate_ratio"),
+            report["decimate"]["tris_after_decimate"],
+            report["decimate"]["uv_layers_after_decimate"],
+        )
+    )
+    if "decimate_ratio" in report:
+        report["decimate"]["ratio"] = report["decimate_ratio"]
+    after = report["decimate"]["tris_after_decimate"]
+    limit, multiple = decimate_math.stall_limit_tris(target)
+    report["decimate"]["stall_multiple"] = multiple
+    report["decimate"]["stall_limit_tris"] = limit
+    if after > limit:
+        report["decimate"]["stalled"] = True
+        report["reasons"].append(
+            "decimate_stall tris_after=%d > %d (target=%d × %.1fx)"
+            % (after, limit, target, multiple)
+        )
+        report["steps"].append(
+            "163 STALL halt _Review (%d tris > %d limit)" % (after, limit)
+        )
+
+
 def halt_for_review(src, review_root, report):
     stem = os.path.splitext(os.path.basename(src))[0]
     dest_dir = os.path.join(review_root, stem)
@@ -304,6 +550,9 @@ def halt_for_review(src, review_root, report):
         "copied": copied,
         "baked_fbx": False,
         "halted": True,
+        "decimate": report.get("decimate"),
+        "tris": report.get("tris"),
+        "tris_after_decimate": (report.get("decimate") or {}).get("tris_after_decimate"),
     }
     write_json(os.path.join(dest_dir, "NEEDS_REVIEW.json"), payload)
     print("BAKE_REVIEW", rel(dest_dir))
@@ -312,7 +561,7 @@ def halt_for_review(src, review_root, report):
 
 
 def main():
-    src, dst, review_root = parse_args()
+    src, dst, review_root, do_decimate, target_tris, kind = parse_args()
     report = {
         "ticket": 152,
         "blender": bpy.app.version_string,
@@ -320,6 +569,8 @@ def main():
         "output": rel(dst),
         "gui": False,
         "background": True,
+        "decimate_requested": do_decimate,
+        "decimate_kind": kind,
         "steps": [],
         "reasons": [],
         "keywords_matched": [],
@@ -355,6 +606,7 @@ def main():
         sys.exit(1)
 
     report["world_bounds"] = mesh_world_bounds(meshes)
+    report["tris"] = tri_count(meshes)
     report["keywords_matched"] = keyword_hits(collect_name_tokens(src, meshes))
 
     # Safety net (2026-08-26): HALT on keyword match or mesh_object_count > 1.
@@ -370,6 +622,13 @@ def main():
     if report["reasons"]:
         halt_for_review(src, review_root, report)
 
+    # Ticket 163 — opt-in only. Safety net above is unchanged and still
+    # fires on mesh_count > 1 before any remesh/decimate.
+    if do_decimate:
+        run_decimate_stage(meshes, report, target_tris, kind)
+        if report["reasons"]:
+            halt_for_review(src, review_root, report)
+
     report["before_floor_origin"] = snapshot("before_floor_origin", meshes)
     after_bounds = apply_floor_origin(meshes)
     report["steps"].append(
@@ -377,6 +636,7 @@ def main():
     )
     report["after_floor_origin"] = snapshot("after_floor_origin", meshes)
     report["after_floor_origin_bounds"] = after_bounds
+    report["tris_after_bake"] = tri_count(meshes)
 
     os.makedirs(os.path.dirname(dst), exist_ok=True)
     select_meshes(meshes)

@@ -99,6 +99,7 @@ public static class Bake149Verify
             sb.AppendLine("kind: " + so.kind);
             sb.AppendLine("pickupable: " + so.pickupable);
             sb.AppendLine("approved: " + so.approved);
+            sb.AppendLine("exemptFromCellFitScaling: " + so.exemptFromCellFitScaling);
             sb.AppendLine("weight: " + so.weight);
             sb.AppendLine("price: " + so.price);
             sb.AppendLine("category: '" + (so.category ?? "") + "'");
@@ -111,9 +112,11 @@ public static class Bake149Verify
                 && so.kind == ObjectKind.Pickable
                 && so.pickupable
                 && !so.approved
+                && !so.exemptFromCellFitScaling
                 && so.stackable == ObjectTriState.Unset
                 && so.sizeTier == ObjectSizeTier.Unset
                 && so.physicsGravity == ObjectPhysicsGravity.Unset
+                // Pre-159 generate; 159 does not rewrite existing Properties.
                 && Mathf.Abs(so.scaleMultiplier - 1f) < 0.001f
                 && so.pivotOffset == Vector3.zero;
             sb.AppendLine("CHECK so: " + soOk);

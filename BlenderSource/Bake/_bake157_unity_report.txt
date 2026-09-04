@@ -1,0 +1,12 @@
+=== Ticket 157 Object Browser verify ===
+listedCount=2
+  CreamChair_Raw153 | Pickable | PENDING | Assets/Objects/Pickable/CreamChair_Raw153/CreamChair_Raw153_Properties.asset
+  Meshy_AI_Orange_Office_Chair_0826075021_texture_fbx | Pickable | PENDING | Assets/Objects/Pickable/Meshy_AI_Orange_Office_Chair_0826075021_texture_fbx/Meshy_AI_Orange_Office_Chair_0826075021_texture_fbx_Properties.asset
+CHECK cream listed: True
+CHECK orange listed: True
+searchCreamCount=1
+CHECK search cream includes cream chair: True
+CHECK search cream excludes orange chair: True
+CHECK click ping cream Properties: True
+selection=Assets/Objects/Pickable/CreamChair_Raw153/CreamChair_Raw153_Properties.asset
+PASS=True

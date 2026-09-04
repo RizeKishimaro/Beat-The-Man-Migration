@@ -1,0 +1,44 @@
+=== Ticket 160 Part B pipeline e2e ===
+stem=Meshy_AI_Cream_Cushioned_Woode_0902130031_texture_fbx
+defaults=MeshyModelImportDefaults Calculate 90
+folder=Assets/Objects/Pickable/Meshy_AI_Cream_Cushioned_Woode_0902130031_texture_fbx
+fbx=Assets/Objects/Pickable/Meshy_AI_Cream_Cushioned_Woode_0902130031_texture_fbx/Meshy_AI_Cream_Cushioned_Woode_0902130031_texture.fbx
+--- CHECK1 importer (must be automatic Calculate, no manual tweak) ---
+importNormals=Calculate
+normalSmoothingAngle=90
+importTangents=CalculateMikk
+CHECK1 auto Calculate 90: True
+--- CHECK3 material smoothness (ticket 160) ---
+shader=Universal Render Pipeline/Lit
+_Smoothness=0.5
+_METALLICSPECGLOSSMAP=True
+CHECK3 URP Lit smoothness 0.5: True
+--- CHECK4 duplicate folder / class (ticket 161) ---
+Nodes dest absent: True Assets/Objects/Nodes/Meshy_AI_Cream_Cushioned_Woode_0902130031_texture_fbx
+CHECK unique stub classes: True
+CHECK4 no dup folder/class: True
+CHECK compile errors: True scriptCompilationFailed=False
+approved + prefab built
+--- CHECK2 cell-fit on REAL prefab (ticket 162) ---
+kind=Pickable
+exempt=False
+scaleMultiplier=0.7883607
+fbx footprint maxXZ=1.268455 expectMultiplier=0.7883607
+prefabPath=Assets/Objects/Pickable/Meshy_AI_Cream_Cushioned_Woode_0902130031_texture_fbx/Meshy_AI_Cream_Cushioned_Woode_0902130031_texture_fbx.prefab
+prefab root scale=(1.00, 1.00, 1.00)
+prefab Wrapper scale=(0.79, 0.79, 0.79)
+instanced prefab world maxXZ=1
+CHECK2 wrapper=multiplier, root=1, worldXZ~1m: True wrapOk=True fitOk=True worldOk=True
+spawned prefab at (40.00, 0.00, 40.00) bounds=(1.36, 1.50, 1.37)
+WARN no Camera.main
+CHECK1_normals_auto=True
+CHECK2_cellfit_prefab=True
+CHECK3_gloss=True
+CHECK4_compile_dup=True
+entering Play
+resumed in Play after domain reload
+play shot 2004x1356 bytes=89197
+play spawned=True
+play mesh verts=1612 normals=1612 zeroN=0
+play compileFailed=False
+RESULT=OK (inspect play.png for blotches/gloss)

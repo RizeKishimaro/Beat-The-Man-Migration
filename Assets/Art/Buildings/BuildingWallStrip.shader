@@ -473,6 +473,104 @@ Shader "BeatTheMan/BuildingWallStrip"
             }
             ENDHLSL
         }
+
+        // SSAO / Forward+ DepthNormalPrepass. Without this, walls are missing
+        // from _CameraNormalsTexture and SSAO sees interior geometry through them.
+        Pass
+        {
+            Name "DepthNormals"
+            Tags { "LightMode" = "DepthNormals" }
+
+            ZWrite On
+            Cull [_Cull]
+
+            HLSLPROGRAM
+            #pragma target 2.0
+            #pragma vertex DepthNormalsVert
+            #pragma fragment DepthNormalsFrag
+            #pragma shader_feature_local _STRIP_ON
+            #pragma multi_compile_instancing
+            #pragma multi_compile_fragment _ _GBUFFER_NORMALS_OCT
+            #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/RenderingLayers.hlsl"
+
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+
+            CBUFFER_START(UnityPerMaterial)
+                float4 _BaseMap_ST;
+                float4 _BaseColor;
+                float _Smoothness;
+                float _Metallic;
+                float _Cull;
+                float _StripHeight;
+                float _WallBaseY;
+                float _StripEnabled;
+            CBUFFER_END
+
+            float3 ClampStripY(float3 positionWS)
+            {
+            #if defined(_STRIP_ON)
+                positionWS.y = min(positionWS.y, _WallBaseY + _StripHeight);
+            #endif
+                return positionWS;
+            }
+
+            struct Attributes
+            {
+                float4 positionOS : POSITION;
+                float3 normalOS : NORMAL;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
+            };
+
+            struct Varyings
+            {
+                float4 positionCS : SV_POSITION;
+                float3 positionWS : TEXCOORD0;
+                float3 normalWS : TEXCOORD1;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
+            };
+
+            Varyings DepthNormalsVert(Attributes input)
+            {
+                Varyings output = (Varyings)0;
+                UNITY_SETUP_INSTANCE_ID(input);
+                UNITY_TRANSFER_INSTANCE_ID(input, output);
+
+                float3 positionWS = ClampStripY(TransformObjectToWorld(input.positionOS.xyz));
+                output.positionWS = positionWS;
+                output.positionCS = TransformWorldToHClip(positionWS);
+                output.normalWS = TransformObjectToWorldNormal(input.normalOS);
+                return output;
+            }
+
+            void DepthNormalsFrag(
+                Varyings input
+                , out half4 outNormalWS : SV_Target0
+            #ifdef _WRITE_RENDERING_LAYERS
+                , out uint outRenderingLayers : SV_Target1
+            #endif
+            )
+            {
+                UNITY_SETUP_INSTANCE_ID(input);
+            #if defined(_STRIP_ON)
+                clip((_WallBaseY + _StripHeight) - input.positionWS.y);
+            #endif
+
+            #if defined(_GBUFFER_NORMALS_OCT)
+                float3 normalWS = normalize(input.normalWS);
+                float2 octNormalWS = PackNormalOctQuadEncode(normalWS);
+                float2 remappedOctNormalWS = saturate(octNormalWS * 0.5 + 0.5);
+                half3 packedNormalWS = PackFloat2To888(remappedOctNormalWS);
+                outNormalWS = half4(packedNormalWS, 0.0);
+            #else
+                outNormalWS = half4(NormalizeNormalPerPixel(input.normalWS), 0.0);
+            #endif
+
+            #ifdef _WRITE_RENDERING_LAYERS
+                outRenderingLayers = EncodeMeshRenderingLayer();
+            #endif
+            }
+            ENDHLSL
+        }
     }
 
     FallBack "Universal Render Pipeline/Lit"

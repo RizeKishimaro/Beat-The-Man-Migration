@@ -1,0 +1,81 @@
+{
+  "spike": "pre-163 manual decimation",
+  "blender": "5.2.0 LTS",
+  "input": "_Spike163/RawSource/Meshy_AI_Cream_Cushioned_Woode_0901123805_texture_fbx/Meshy_AI_Cream_Cushioned_Woode_0901123805_texture.fbx",
+  "output": "Assets/_Spike163/Printer_Dec025/Printer_Dec025.fbx",
+  "decimate": {
+    "modifier": "DECIMATE",
+    "mode": "COLLAPSE",
+    "ratio": 0.25
+  },
+  "modifiers": [
+    {
+      "object": "mesh_node",
+      "type": "DECIMATE",
+      "mode": "COLLAPSE",
+      "ratio": 0.25
+    }
+  ],
+  "steps": [
+    "imported raw FBX (3242 tris)",
+    "Decimate COLLAPSE ratio=0.25 applied (810 tris)",
+    "152 floor-origin: AABB bottom-center, then Apply All Transforms",
+    "152 FBX_EXPORT flags (bake_space_transform, path_mode=STRIP)"
+  ],
+  "ok": true,
+  "mesh_count": 1,
+  "mesh_names": [
+    "mesh_node"
+  ],
+  "before": {
+    "tris": 3242,
+    "verts": 1679
+  },
+  "before_bounds": {
+    "min": [
+      -0.318359,
+      -0.322266,
+      -0.5
+    ],
+    "max": [
+      0.320312,
+      0.320312,
+      0.5
+    ],
+    "size": [
+      0.638671,
+      0.642578,
+      1.0
+    ]
+  },
+  "after": {
+    "tris": 810,
+    "verts": 463
+  },
+  "actual_ratio": 0.2498,
+  "after_floor_origin_bounds": {
+    "min": [
+      -0.318255,
+      -0.32117,
+      0.0
+    ],
+    "max": [
+      0.318255,
+      0.32117,
+      0.999924
+    ],
+    "size": [
+      0.63651,
+      0.64234,
+      0.999924
+    ]
+  },
+  "output_exists": true,
+  "output_bytes": 62844,
+  "textures_copied": [
+    "Assets/_Spike163/Printer_Dec025/Meshy_AI_Cream_Cushioned_Woode_0901123805_texture.png",
+    "Assets/_Spike163/Printer_Dec025/Meshy_AI_Cream_Cushioned_Woode_0901123805_texture_metallic.png",
+    "Assets/_Spike163/Printer_Dec025/Meshy_AI_Cream_Cushioned_Woode_0901123805_texture_normal.png",
+    "Assets/_Spike163/Printer_Dec025/Meshy_AI_Cream_Cushioned_Woode_0901123805_texture_roughness.png"
+  ]
+}

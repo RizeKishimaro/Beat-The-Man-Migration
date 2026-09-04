@@ -1,0 +1,26 @@
+{
+  "ticket": 163,
+  "config": {
+    "target_tris": 1500,
+    "target_tris_pickable": 1500,
+    "target_tris_nodes": 1500,
+    "stall_multiple": 2.0,
+    "voxel_frac_of_longest": 0.0014814814814814814,
+    "voxel_min": 0.0002,
+    "voxel_max": 0.05
+  },
+  "spike_longest_0.81_voxel": 0.0012000000000000001,
+  "spike_expected": 0.0012,
+  "spike_ok": true,
+  "3x_longest_2.43_voxel": 0.0036,
+  "3x_expected": 0.0036,
+  "3x_ok": true,
+  "target_tris": 1500,
+  "resolve_global": 1500,
+  "resolve_pickable": 1500,
+  "resolve_nodes": 1500,
+  "resolve_cli_override": 800,
+  "flag": "target_tris is JSON (now 1500). Per-category keys: target_tris_pickable / target_tris_nodes.",
+  "resolve_ok": true,
+  "ok": true
+}

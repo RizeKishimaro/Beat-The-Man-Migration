@@ -21,6 +21,8 @@ public class ObjectFolderGenerator : AssetPostprocessor
     const string NodeTemplatePath = "Assets/Scripts/Editor/Templates/NodeStub.txt";
     const string UrpLitShader = "Universal Render Pipeline/Lit";
     const float EmissionBlackMax = 2f / 255f;
+    // Ticket 160 row #3 — mask-driven smoothness scalar (was 1.0, too glossy).
+    const float MaskSmoothnessMultiplier = 0.5f;
 
     static readonly HashSet<string> QueuedFolders = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
     static bool generateQueued;
@@ -169,14 +171,14 @@ public class ObjectFolderGenerator : AssetPostprocessor
 
         string name = Path.GetFileName(folder.TrimEnd('/'));
         var done = new StringBuilder();
-        done.Append(EnsureProperties(folder, name, kind));
+        done.Append(EnsureProperties(folder, name, kind, fbx));
         done.Append(EnsureStub(folder, name, kind));
         done.Append(EnsureMaterial(folder, name, fbx));
         Debug.Log(LogPrefix + " " + name + ": " + done);
         return done.ToString();
     }
 
-    static string EnsureProperties(string folder, string name, ObjectKind kind)
+    public static string EnsureProperties(string folder, string name, ObjectKind kind, string fbxPath)
     {
         string path = folder + "/" + name + "_Properties.asset";
         if (AssetExists(path))
@@ -188,6 +190,7 @@ public class ObjectFolderGenerator : AssetPostprocessor
         so.kind = kind;
         so.pickupable = kind == ObjectKind.Pickable;
         so.approved = false;
+        so.exemptFromCellFitScaling = false;
         so.weight = 0f;
         so.price = 0f;
         so.category = "";
@@ -196,6 +199,13 @@ public class ObjectFolderGenerator : AssetPostprocessor
         so.physicsGravity = ObjectPhysicsGravity.Unset;
         so.scaleMultiplier = 1f;
         so.pivotOffset = Vector3.zero;
+        // Ticket 159 — new Pickable Properties only. Existing assets are
+        // not rewritten (early return above). Nodes stay real-world / 152.
+        if (kind == ObjectKind.Pickable && !so.exemptFromCellFitScaling)
+        {
+            if (ObjectCellFitScaling.TryComputeForFbx(fbxPath, out float fit, out _))
+                so.scaleMultiplier = fit;
+        }
         so.prefabPath = "";
         // Ticket 155 — leave judgment blanks unset; do not guess.
         so.interaction = ObjectInteraction.Unset;
@@ -206,7 +216,7 @@ public class ObjectFolderGenerator : AssetPostprocessor
         so.sfx = default;
         so.uniqueProperties = new System.Collections.Generic.List<ObjectUniqueEntry>();
         AssetDatabase.CreateAsset(so, path);
-        return "properties=created ";
+        return "properties=created scale=" + so.scaleMultiplier.ToString("0.###") + " ";
     }
 
     static string EnsureStub(string folder, string name, ObjectKind kind)
@@ -215,6 +225,13 @@ public class ObjectFolderGenerator : AssetPostprocessor
         string path = folder + "/" + className + ".cs";
         if (AssetExists(path) || File.Exists(ToAbs(path)))
             return "stub=exists ";
+
+        if (StubClassExistsElsewhere(className, path))
+        {
+            Debug.LogError(LogPrefix + " skip stub — class " + className
+                + " already exists under Objects (ticket 161). Will not create " + path);
+            return "stub=SKIP duplicate class ";
+        }
 
         string templatePath = kind == ObjectKind.Pickable ? PickableTemplatePath : NodeTemplatePath;
         string template = ReadTemplate(templatePath, kind);
@@ -504,7 +521,7 @@ public class ObjectFolderGenerator : AssetPostprocessor
             if (mat.HasProperty("_Metallic"))
                 mat.SetFloat("_Metallic", 1f);
             if (mat.HasProperty("_Smoothness"))
-                mat.SetFloat("_Smoothness", 1f);
+                mat.SetFloat("_Smoothness", MaskSmoothnessMultiplier);
             if (mat.HasProperty("_SmoothnessTextureChannel"))
                 mat.SetFloat("_SmoothnessTextureChannel", 0f);
             mat.EnableKeyword("_METALLICSPECGLOSSMAP");
@@ -674,6 +691,33 @@ public class ObjectFolderGenerator : AssetPostprocessor
         if (slash < 0)
             return null;
         return dest + "/" + name;
+    }
+
+    static bool StubClassExistsElsewhere(string className, string thisPath)
+    {
+        if (string.IsNullOrEmpty(className))
+            return false;
+        string needle = "class " + className + " ";
+        string thisNorm = Normalize(thisPath);
+        string[] roots = { DestPickable, DestNodes };
+        for (int r = 0; r < roots.Length; r++)
+        {
+            string abs = ToAbs(roots[r]);
+            if (!Directory.Exists(abs))
+                continue;
+            foreach (string file in Directory.GetFiles(abs, "*.cs", SearchOption.AllDirectories))
+            {
+                string asset = ToAsset(file);
+                if (string.IsNullOrEmpty(asset))
+                    continue;
+                if (Normalize(asset).Equals(thisNorm, StringComparison.OrdinalIgnoreCase))
+                    continue;
+                string text = File.ReadAllText(file);
+                if (text.Contains(needle))
+                    return true;
+            }
+        }
+        return false;
     }
 
     static string FindFbx(string folder)

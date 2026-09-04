@@ -1,0 +1,30 @@
+=== Ticket 159 cell-fit verify ===
+--- Formula max(X,Z) ---
+cube scale (0.4, 2, 0.8) maxXZ=0.8 mul=1.25 (want 0.8 / 1.25)
+zero footprint → 1: True
+CHECK formula: True
+--- New Pickable generate ---
+EnsureProperties: properties=created scale=1.718 
+kind: Pickable
+exemptFromCellFitScaling: False
+scaleMultiplier: 1.718119
+computed fit: 1.718119 maxXZ=0.582032
+CHECK new pickable: True
+--- Existing CreamChair (must stay 1) ---
+scaleMultiplier: 1
+exemptFromCellFitScaling: False
+CHECK existing unchanged: True
+--- New Node generate ---
+EnsureProperties: properties=created scale=1 
+kind: Node
+scaleMultiplier: 1
+CHECK new node: True
+--- Exempt does not rewrite existing scale ---
+EnsureProperties (exists): properties=exists 
+scale before: 1.718119
+scale after: 1.718119
+exempt: True
+CHECK exempt no rewrite: True
+
+RESULT=OK
+PASS=True

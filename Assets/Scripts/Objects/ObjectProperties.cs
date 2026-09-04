@@ -100,6 +100,9 @@ public class ObjectProperties : ScriptableObject
     public bool pickupable;
     public bool approved;
 
+    [Tooltip("Ticket 159 — Pickable / GridFootprint Object only. When true, skip 1×1m cell-fit; keep real-world scale (152). Nodes ignore this.")]
+    public bool exemptFromCellFitScaling;
+
     [Tooltip("Generated prefab path after Approve (ticket 156). Cleared on Unapprove.")]
     public string prefabPath;
 

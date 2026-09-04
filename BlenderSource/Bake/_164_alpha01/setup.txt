@@ -1,0 +1,10 @@
+=== Ticket 164 Alpha01 scene setup ===
+does not save GridFoundation
+GridSystem prefab origin=0 cellSize=1 overlay=True
+Player Character_Base assigned spawn=(-0.58, 0.00, -0.50)
+Main Camera + CameraFollow offset=(-8.00, 7.00, -8.00) ortho=6
+Directional Light intensity=1.55 (playground values)
+SeatTarget + JumpOnSeatPoint at (1.50, 0.00, -0.50)
+saved=True Assets/Scenes/Alpha01.unity
+active=Assets/Scenes/Alpha01.unity
+RESULT=OK

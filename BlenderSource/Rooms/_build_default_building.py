@@ -9,10 +9,14 @@ Footprint
   6x6 m  interior clear space     (x/y 1..7)
   0.7 m  leftover toward the outer edge = future exterior-decor margin
 
-Ticket 122 — EVEN WALLS: all four sides of the wall ring span the same
-6.6 m outer length (picture-frame). Left/Right run W_MIN..W_MAX on Y
-(overlapping corners with Front/Back). Do NOT stretch walls to the 8 m
-exterior — the 0.7 m margin stays for future exterior decor.
+Ticket 122 — EVEN WALLS: outer picture-frame is 6.6 m (W_MIN..W_MAX).
+Do NOT stretch walls to the 8 m exterior — the 0.7 m margin stays for
+future exterior decor.
+
+Corner trim: Front/Back own the 0.3×0.3 corner columns. Left/Right are
+trimmed to INT_MIN..INT_MAX on Y so adjacent boxes meet at an edge (no
+overlapping volume). Overlapping boxes + Cull Back punched holes into
+the hollow wall cavity.
 
 Front wall is the MIN-Y side.
 
@@ -139,10 +143,10 @@ def world_aabb(name):
 EXPECTED = {
     "RoomFloor":         (1.0, 7.0, 1.0, 7.0, 0.0, 0.05),
     "RoomCeiling":       (1.0, 7.0, 1.0, 7.0, 2.95, 3.0),
-    # Ticket 122: all four ring sides span 6.6 m (W_MIN..W_MAX).
+    # Front/Back own corners (full 6.6 m). Left/Right trimmed on Y (6.0 m).
     "Wall_Back":         (0.7, 7.3, 7.0, 7.3, 0.0, 3.0),
-    "Wall_Left":         (0.7, 1.0, 0.7, 7.3, 0.0, 3.0),
-    "Wall_Right":        (7.0, 7.3, 0.7, 7.3, 0.0, 3.0),
+    "Wall_Left":         (0.7, 1.0, 1.0, 7.0, 0.0, 3.0),
+    "Wall_Right":        (7.0, 7.3, 1.0, 7.0, 0.0, 3.0),
     "Wall_Front_Left":   (0.7, DOOR_X0, 0.7, 1.0, 0.0, 3.0),
     "Wall_Front_Right":  (DOOR_X1, 7.3, 0.7, 1.0, 0.0, 3.0),
     "Wall_Front_Lintel": (DOOR_X0, DOOR_X1, 0.7, 1.0, DOOR_H, 3.0),
@@ -181,15 +185,57 @@ def verify():
             print("FAIL door opening blocked by", wall)
             failures.append(wall)
 
-    # Ticket 122: left/right/back long-axis lengths must match (6.6 m).
+    # Outer picture-frame still 6.6 m (Back X, Front span). Left/Right Y = 6.0 m.
     ring_len = round(W_MAX - W_MIN, 3)
-    for name, axis in (("Wall_Back", "x"), ("Wall_Left", "y"), ("Wall_Right", "y")):
+    side_len = round(INT_MAX - INT_MIN, 3)
+    for name, axis, exp in (("Wall_Back", "x", ring_len),
+                            ("Wall_Left", "y", side_len),
+                            ("Wall_Right", "y", side_len)):
         b = world_aabb(name)
         length = round((b[1] - b[0]) if axis == "x" else (b[3] - b[2]), 3)
-        ok = abs(length - ring_len) < 0.002
-        print(("PASS " if ok else "FAIL ") + name + "_length", length, "expected", ring_len)
+        ok = abs(length - exp) < 0.002
+        print(("PASS " if ok else "FAIL ") + name + "_length", length, "expected", exp)
         if not ok:
             failures.append(name + "_length")
+
+    front_l = world_aabb("Wall_Front_Left")
+    front_r = world_aabb("Wall_Front_Right")
+    front_span = round(front_r[1] - front_l[0], 3)
+    ok = abs(front_span - ring_len) < 0.002
+    print(("PASS " if ok else "FAIL ") + "front_span", front_span, "expected", ring_len)
+    if not ok:
+        failures.append("front_span")
+
+    walls = ("Wall_Back", "Wall_Left", "Wall_Right",
+             "Wall_Front_Left", "Wall_Front_Right", "Wall_Front_Lintel")
+    boxes = {n: world_aabb(n) for n in walls}
+    env = (
+        min(b[0] for b in boxes.values()), max(b[1] for b in boxes.values()),
+        min(b[2] for b in boxes.values()), max(b[3] for b in boxes.values()),
+    )
+    ok = all(abs(env[i] - (W_MIN, W_MAX, W_MIN, W_MAX)[i]) < 0.002 for i in range(4))
+    print(("PASS " if ok else "FAIL ") + "envelope_xy", env, "expected", (W_MIN, W_MAX, W_MIN, W_MAX))
+    if not ok:
+        failures.append("envelope_xy")
+
+    # Shared faces are OK; a 0.3×0.3 overlapping column is not.
+    eps = 0.001
+    overlap_pairs = (
+        ("Wall_Left", "Wall_Front_Left"),
+        ("Wall_Left", "Wall_Back"),
+        ("Wall_Right", "Wall_Front_Right"),
+        ("Wall_Right", "Wall_Back"),
+    )
+    for a_name, b_name in overlap_pairs:
+        a, b = boxes[a_name], boxes[b_name]
+        overlap = (
+            a[0] < b[1] - eps and a[1] > b[0] + eps and
+            a[2] < b[3] - eps and a[3] > b[2] + eps and
+            a[4] < b[5] - eps and a[5] > b[4] + eps
+        )
+        print(("PASS " if not overlap else "FAIL ") + "no_overlap " + a_name + "×" + b_name)
+        if overlap:
+            failures.append("overlap_" + a_name + "_" + b_name)
 
     return failures
 
@@ -237,10 +283,11 @@ def main():
     make_box("RoomCeiling", INT_MIN, INT_MAX, INT_MIN, INT_MAX,
              WALL_H - CEIL_T, WALL_H, m_ceil, root)
 
-    # Picture-frame ring: each full side spans W_MIN..W_MAX (6.6 m).
+    # Picture-frame ring: Front/Back span W_MIN..W_MAX and own the corners.
+    # Left/Right stop at INT_MIN..INT_MAX on Y (no overlapping corner columns).
     make_box("Wall_Back", W_MIN, W_MAX, B_IN, B_OUT, 0.0, WALL_H, m_wall, root)
-    make_box("Wall_Left", W_MIN, INT_MIN, W_MIN, W_MAX, 0.0, WALL_H, m_wall, root)
-    make_box("Wall_Right", INT_MAX, W_MAX, W_MIN, W_MAX, 0.0, WALL_H, m_wall, root)
+    make_box("Wall_Left", W_MIN, INT_MIN, INT_MIN, INT_MAX, 0.0, WALL_H, m_wall, root)
+    make_box("Wall_Right", INT_MAX, W_MAX, INT_MIN, INT_MAX, 0.0, WALL_H, m_wall, root)
 
     make_box("Wall_Front_Left", W_MIN, DOOR_X0, F_OUT, F_IN, 0.0, WALL_H, m_wall, root)
     make_box("Wall_Front_Right", DOOR_X1, W_MAX, F_OUT, F_IN, 0.0, WALL_H, m_wall, root)
@@ -264,7 +311,7 @@ def main():
     bpy.ops.object.select_all(action="DESELECT")
     bpy.context.view_layer.update()
 
-    print("=== DefaultBuilding blockout verification (ticket 122 even walls) ===")
+    print("=== DefaultBuilding blockout verification (corner trim, no overlap) ===")
     print("BLEND_PATH", BLEND_PATH)
     print("FBX_PATH", FBX_PATH)
     print("DOOR_W", DOOR_W)

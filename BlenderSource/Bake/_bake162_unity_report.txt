@@ -1,0 +1,22 @@
+=== Ticket 162 prefab Wrapper scale verify ===
+--- cell-fit 1.556231 ---
+root.localScale: (1.00, 1.00, 1.00)
+Wrapper.localScale: (1.56, 1.56, 1.56)
+BoxCollider size: (0.99, 1.56, 1.00)
+instance footprint max(X,Z): 1
+CHECK cell-fit 1.556231: True (root1=True wrap=True foot=True)
+--- rebuild at 2 ---
+root.localScale: (1.00, 1.00, 1.00)
+Wrapper.localScale: (2.00, 2.00, 2.00)
+BoxCollider size: (1.28, 2.00, 1.29)
+instance footprint max(X,Z): 1.285156
+CHECK rebuild at 2: True (root1=True wrap=True foot=True)
+prefab GUID: 451998f5c0224447c9dd2b23ebc532c0
+CHECK GUID preserved across rebuilds: True
+shot: Temp/bake162_printer.png bytes=117847
+live instance root: (1.00, 1.00, 1.00)
+live instance Wrapper: (1.56, 1.56, 1.56)
+CHECK capture + live Wrapper: True
+
+RESULT=OK
+PASS=True

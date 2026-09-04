@@ -9,10 +9,13 @@ using UnityEngine;
 /// Ticket 148 — watch Assets/Objects/_Incoming/{Pickable,Nodes} for a baked FBX
 /// (+ sibling textures), then MOVE them into Assets/Objects/{Pickable,Nodes}/&lt;Name&gt;/.
 ///
-/// Detection is Unity AssetPostprocessor (Editor must be open). Does not guess
-/// Pickable vs Node: drop folder is the classification. Does not retouch FBX
-/// importer scale/rotation/pivot — Blender recipe is assumed already applied.
-/// Hash-mismatch never overwrites. Out of scope: 149/150, prefabs, Airtable.
+    /// Detection is Unity AssetPostprocessor (Editor must be open). Does not guess
+    /// Pickable vs Node: drop folder is the classification. Ticket 161: a re-drop
+    /// into the other Incoming kind removes the stale dest folder (same name or
+    /// same FBX filename) so two stubs cannot share a class name. Does not retouch
+    /// FBX importer scale/rotation/pivot — Blender recipe is assumed already applied.
+    /// Ticket 160 normals default (Calculate, 90°) lives in MeshyModelImportDefaults.
+    /// Hash-mismatch never overwrites. Out of scope: 149/150, prefabs, Airtable.
 /// </summary>
 public class ObjectIncomingPostprocessor : AssetPostprocessor
 {
@@ -42,6 +45,13 @@ public class ObjectIncomingPostprocessor : AssetPostprocessor
             EnsureFolders();
             QueueOrganize();
         };
+    }
+
+    [MenuItem("Tools/Objects/Organize Incoming Now")]
+    public static void MenuOrganizeNow()
+    {
+        Debug.Log(LogPrefix + " menu OrganizeNow");
+        OrganizeNow();
     }
 
     static void OnPostprocessAllAssets(
@@ -95,11 +105,13 @@ public class ObjectIncomingPostprocessor : AssetPostprocessor
         organizeQueued = false;
         if (EditorApplication.isCompiling)
         {
+            Debug.Log(LogPrefix + " defer organize — compiling");
             QueueOrganize();
             return;
         }
         if (EditorApplication.isPlayingOrWillChangePlaymode)
         {
+            Debug.Log(LogPrefix + " defer organize — playmode");
             EditorApplication.playModeStateChanged -= OnPlayModeChanged;
             EditorApplication.playModeStateChanged += OnPlayModeChanged;
             return;
@@ -298,6 +310,7 @@ public class ObjectIncomingPostprocessor : AssetPostprocessor
         string destDir = destRoot + "/" + name;
         string destFbx = destDir + "/" + Path.GetFileName(fbxAsset);
         string absIncomingFbx = ToAbs(fbxAsset);
+        RemoveStaleCrossKindFolders(destRoot, name, Path.GetFileName(fbxAsset));
 
         if (AssetDatabase.IsValidFolder(destDir) || Directory.Exists(ToAbs(destDir)))
         {
@@ -379,6 +392,56 @@ public class ObjectIncomingPostprocessor : AssetPostprocessor
         DeleteIncomingMaterials(fbxAsset);
         CleanupEmptyIncomingFolder(fbxAsset);
         Debug.Log($"{LogPrefix} moved {kindLabel}/{name} → {destFbx}");
+    }
+
+    /// <summary>
+    /// Ticket 161 — reclassification re-drop. Remove dest folders in either
+    /// Pickable or Nodes that share this drop's folder name or FBX filename,
+    /// except the folder we are about to land in.
+    /// </summary>
+    static void RemoveStaleCrossKindFolders(string destRoot, string name, string fbxFileName)
+    {
+        string keep = Normalize(destRoot + "/" + name);
+        var stale = new List<string>();
+        CollectStaleDestFolders(DestPickable, name, fbxFileName, keep, stale);
+        CollectStaleDestFolders(DestNodes, name, fbxFileName, keep, stale);
+        for (int i = 0; i < stale.Count; i++)
+        {
+            Debug.LogWarning($"{LogPrefix} reclassification: removing stale {stale[i]} (landing {keep})");
+            if (!AssetDatabase.DeleteAsset(stale[i]))
+                Debug.LogError($"{LogPrefix} failed to delete stale {stale[i]}");
+        }
+    }
+
+    static void CollectStaleDestFolders(
+        string scanRoot, string newName, string fbxFileName, string keep, List<string> stale)
+    {
+        string abs = ToAbs(scanRoot);
+        if (!Directory.Exists(abs))
+            return;
+
+        foreach (string dir in Directory.GetDirectories(abs))
+        {
+            string folderName = Path.GetFileName(dir);
+            if (string.IsNullOrEmpty(folderName) || folderName.StartsWith("."))
+                continue;
+
+            string folder = Normalize(scanRoot + "/" + folderName);
+            if (string.Equals(folder, keep, StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            bool nameMatch = folderName.Equals(newName, StringComparison.OrdinalIgnoreCase);
+            bool fbxMatch = false;
+            if (!string.IsNullOrEmpty(fbxFileName))
+            {
+                string candidate = folder + "/" + fbxFileName;
+                if (File.Exists(ToAbs(candidate)))
+                    fbxMatch = true;
+            }
+
+            if (nameMatch || fbxMatch)
+                stale.Add(folder);
+        }
     }
 
     static void DeleteIncomingMaterials(string fbxAsset)

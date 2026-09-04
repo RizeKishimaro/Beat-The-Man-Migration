@@ -92,6 +92,7 @@ public static class Bake155Verify
         sb.AppendLine("kind: " + props.kind);
         sb.AppendLine("pickupable: " + props.pickupable);
         sb.AppendLine("approved: " + props.approved);
+        sb.AppendLine("exemptFromCellFitScaling: " + props.exemptFromCellFitScaling);
         sb.AppendLine("weight: " + props.weight);
         sb.AppendLine("price: " + props.price);
         sb.AppendLine("category: '" + (props.category ?? "") + "'");
@@ -106,13 +107,14 @@ public static class Bake155Verify
             && props.kind == ObjectKind.Pickable
             && props.pickupable
             && !props.approved
+            && !props.exemptFromCellFitScaling
             && Mathf.Abs(props.weight) < 0.0001f
             && Mathf.Abs(props.price) < 0.0001f
             && string.IsNullOrEmpty(props.category)
             && props.stackable == ObjectTriState.Unset
             && props.sizeTier == ObjectSizeTier.Unset
             && props.physicsGravity == ObjectPhysicsGravity.Unset
-            && Mathf.Abs(props.scaleMultiplier - 1f) < 0.001f
+            && Mathf.Abs(props.scaleMultiplier - 1f) < 0.001f // pre-159 generate; 159 does not rewrite
             && props.pivotOffset == Vector3.zero;
         sb.AppendLine("CHECK existing 149/150 unchanged: " + existingOk);
 

@@ -12,13 +12,16 @@ using Debug = UnityEngine.Debug;
 /// Ticket 153 — watch Drop/{Pickable,Nodes} (project root, outside Assets/)
 /// for a raw Meshy zip or unzipped FBX, unzip if needed, run the ticket 152
 /// bake as a background subprocess, then MOVE baked output into 148's
-/// _Incoming folders. Does not guess Pickable vs Node. Does not duplicate
-/// 148 organize or 152 bake logic.
+/// _Incoming folders. Ticket 163: Drop/Decimate/{Pickable,Nodes} is the same
+/// zip flow with --decimate on the bake. Does not guess Pickable vs Node.
+/// Does not duplicate 148 organize or 152 bake logic.
 /// </summary>
 public static class RawDropWatcher
 {
     public const string DropPickable = "Drop/Pickable";
     public const string DropNodes = "Drop/Nodes";
+    public const string DropDecimatePickable = "Drop/Decimate/Pickable";
+    public const string DropDecimateNodes = "Drop/Decimate/Nodes";
     public const string BakeScript = "BlenderSource/Bake/_bake_fbx.py";
     public const string IncomingPickable = ObjectIncomingPostprocessor.IncomingPickable;
     public const string IncomingNodes = ObjectIncomingPostprocessor.IncomingNodes;
@@ -37,6 +40,8 @@ public static class RawDropWatcher
 
     static FileSystemWatcher watcherPickable;
     static FileSystemWatcher watcherNodes;
+    static FileSystemWatcher watcherDecimatePickable;
+    static FileSystemWatcher watcherDecimateNodes;
     static bool scanQueued;
     static bool scanning;
     static bool bakeRunning;
@@ -51,6 +56,7 @@ public static class RawDropWatcher
         public string SourcePath;
         public bool IsZip;
         public bool IsFolder;
+        public bool Decimate;
     }
 
     class BakeState
@@ -125,6 +131,8 @@ public static class RawDropWatcher
         AssemblyReloadEvents.beforeAssemblyReload -= TeardownWatchers;
         DisposeWatcher(ref watcherPickable);
         DisposeWatcher(ref watcherNodes);
+        DisposeWatcher(ref watcherDecimatePickable);
+        DisposeWatcher(ref watcherDecimateNodes);
     }
 
     static void DisposeWatcher(ref FileSystemWatcher w)
@@ -143,8 +151,12 @@ public static class RawDropWatcher
     {
         DisposeWatcher(ref watcherPickable);
         DisposeWatcher(ref watcherNodes);
+        DisposeWatcher(ref watcherDecimatePickable);
+        DisposeWatcher(ref watcherDecimateNodes);
         watcherPickable = MakeWatcher(Abs(DropPickable));
         watcherNodes = MakeWatcher(Abs(DropNodes));
+        watcherDecimatePickable = MakeWatcher(Abs(DropDecimatePickable));
+        watcherDecimateNodes = MakeWatcher(Abs(DropDecimateNodes));
     }
 
     static FileSystemWatcher MakeWatcher(string absDir)
@@ -208,15 +220,25 @@ public static class RawDropWatcher
     {
         Directory.CreateDirectory(Abs(DropPickable));
         Directory.CreateDirectory(Abs(DropNodes));
+        Directory.CreateDirectory(Abs(DropDecimatePickable));
+        Directory.CreateDirectory(Abs(DropDecimateNodes));
         Directory.CreateDirectory(Abs("Drop/_Unpacked/Pickable"));
         Directory.CreateDirectory(Abs("Drop/_Unpacked/Nodes"));
+        Directory.CreateDirectory(Abs("Drop/_Unpacked/Decimate/Pickable"));
+        Directory.CreateDirectory(Abs("Drop/_Unpacked/Decimate/Nodes"));
         Directory.CreateDirectory(Abs("Drop/_BakeOut"));
         Directory.CreateDirectory(Abs("Drop/_NeedsReview/Pickable"));
         Directory.CreateDirectory(Abs("Drop/_NeedsReview/Nodes"));
+        Directory.CreateDirectory(Abs("Drop/_NeedsReview/Decimate/Pickable"));
+        Directory.CreateDirectory(Abs("Drop/_NeedsReview/Decimate/Nodes"));
         Directory.CreateDirectory(Abs("Drop/_Processed/Pickable"));
         Directory.CreateDirectory(Abs("Drop/_Processed/Nodes"));
+        Directory.CreateDirectory(Abs("Drop/_Processed/Decimate/Pickable"));
+        Directory.CreateDirectory(Abs("Drop/_Processed/Decimate/Nodes"));
         TouchGitkeep(Abs(DropPickable));
         TouchGitkeep(Abs(DropNodes));
+        TouchGitkeep(Abs(DropDecimatePickable));
+        TouchGitkeep(Abs(DropDecimateNodes));
     }
 
     static void TouchGitkeep(string dir)
@@ -233,8 +255,10 @@ public static class RawDropWatcher
         scanning = true;
         try
         {
-            ScanKind("Pickable", Abs(DropPickable));
-            ScanKind("Nodes", Abs(DropNodes));
+            ScanKind("Pickable", Abs(DropPickable), false);
+            ScanKind("Nodes", Abs(DropNodes), false);
+            ScanKind("Pickable", Abs(DropDecimatePickable), true);
+            ScanKind("Nodes", Abs(DropDecimateNodes), true);
         }
         finally
         {
@@ -242,7 +266,7 @@ public static class RawDropWatcher
         }
     }
 
-    static void ScanKind(string kind, string absDir)
+    static void ScanKind(string kind, string absDir, bool decimate)
     {
         if (!Directory.Exists(absDir))
             return;
@@ -267,7 +291,8 @@ public static class RawDropWatcher
                     Kind = kind,
                     Stem = SanitizeStem(Path.GetFileNameWithoutExtension(file)),
                     SourcePath = file,
-                    IsZip = true
+                    IsZip = true,
+                    Decimate = decimate
                 });
                 continue;
             }
@@ -284,7 +309,8 @@ public static class RawDropWatcher
                     Kind = kind,
                     Stem = SanitizeStem(Path.GetFileNameWithoutExtension(file)),
                     SourcePath = file,
-                    IsZip = false
+                    IsZip = false,
+                    Decimate = decimate
                 });
             }
         }
@@ -316,7 +342,8 @@ public static class RawDropWatcher
                 Kind = kind,
                 Stem = SanitizeStem(name),
                 SourcePath = dir,
-                IsFolder = true
+                IsFolder = true,
+                Decimate = decimate
             });
         }
     }
@@ -333,7 +360,7 @@ public static class RawDropWatcher
                 return;
         }
         Queue.Enqueue(job);
-        Debug.Log(LogPrefix + " queued " + job.Kind + "/" + job.Stem);
+        Debug.Log(LogPrefix + " queued " + (job.Decimate ? "Decimate/" : "") + job.Kind + "/" + job.Stem);
     }
 
     static void ProcessJobBlocking(DropJob job)
@@ -398,7 +425,7 @@ public static class RawDropWatcher
             return false;
         }
 
-        string unpackDir = Abs("Drop/_Unpacked/" + job.Kind + "/" + job.Stem);
+        string unpackDir = Abs("Drop/_Unpacked/" + FlowPrefix(job) + job.Kind + "/" + job.Stem);
         string inputFbx;
         if (job.IsZip)
         {
@@ -433,11 +460,14 @@ public static class RawDropWatcher
         Directory.CreateDirectory(bakeDir);
         string outFbx = Path.Combine(bakeDir, Path.GetFileName(inputFbx));
 
+        string extra = "";
+        if (job.Decimate)
+            extra = " --decimate --kind " + job.Kind;
         var psi = new ProcessStartInfo
         {
             FileName = blender,
             Arguments = "--background --python \"" + script + "\" -- --input \""
-                + inputFbx + "\" --output \"" + outFbx + "\"",
+                + inputFbx + "\" --output \"" + outFbx + "\"" + extra,
             WorkingDirectory = ProjectRoot(),
             UseShellExecute = false,
             RedirectStandardOutput = true,
@@ -493,15 +523,15 @@ public static class RawDropWatcher
                 return;
             }
             HandoffToIncoming(job, state);
-            ArchiveOriginals(job, state, "Drop/_Processed/" + job.Kind + "/" + job.Stem);
-            Debug.Log(LogPrefix + " baked " + job.Kind + "/" + job.Stem
+            ArchiveOriginals(job, state, "Drop/_Processed/" + FlowPrefix(job) + job.Kind + "/" + job.Stem);
+            Debug.Log(LogPrefix + " baked " + (job.Decimate ? "Decimate/" : "") + job.Kind + "/" + job.Stem
                 + " → " + IncomingFolder(job.Kind) + "/" + job.Stem);
             return;
         }
 
         string reason = exitCode == 2 ? "bake_exit_2" : "bake_exit_1";
         string detail = exitCode == 2
-            ? "152 safety net (keyword or mesh_count>1). In-Unity copy is Assets/Objects/_Review. Raw drop moved to Drop/_NeedsReview."
+            ? "152 safety net (keyword, mesh_count>1, or 163 decimate stall). In-Unity copy is Assets/Objects/_Review. Raw drop moved to Drop/_NeedsReview."
             : "152 bake failed (exit " + exitCode + ")";
         FailToNeedsReview(job, state.UnpackDir, reason, detail);
     }
@@ -533,7 +563,7 @@ public static class RawDropWatcher
 
     static void FailToNeedsReview(DropJob job, string unpackDir, string reason, string detail)
     {
-        string dest = Abs("Drop/_NeedsReview/" + job.Kind + "/" + job.Stem);
+        string dest = Abs("Drop/_NeedsReview/" + FlowPrefix(job) + job.Kind + "/" + job.Stem);
         Directory.CreateDirectory(Path.GetDirectoryName(dest));
         if (Directory.Exists(dest))
             Directory.Delete(dest, true);
@@ -571,6 +601,7 @@ public static class RawDropWatcher
         json.AppendLine("  \"reason\": " + JsonString(reason) + ",");
         json.AppendLine("  \"detail\": " + JsonString(detail) + ",");
         json.AppendLine("  \"kind\": " + JsonString(job.Kind) + ",");
+        json.AppendLine("  \"decimate\": " + (job.Decimate ? "true" : "false") + ",");
         json.AppendLine("  \"stem\": " + JsonString(job.Stem) + ",");
         json.AppendLine("  \"source\": " + JsonString(Rel(job.SourcePath)));
         json.AppendLine("}");
@@ -821,6 +852,11 @@ public static class RawDropWatcher
         if (!string.IsNullOrEmpty(prefs))
             return prefs;
         return DefaultBlender;
+    }
+
+    static string FlowPrefix(DropJob job)
+    {
+        return job.Decimate ? "Decimate/" : "";
     }
 
     static string IncomingFolder(string kind)

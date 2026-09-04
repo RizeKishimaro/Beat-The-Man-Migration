@@ -1,0 +1,3 @@
+DISPOSABLE Ticket 160 comparison scaffolding. Not shipping content.
+Do not use these materials on production prefabs.
+Safe to delete this folder after the smoothness decision.

@@ -1,0 +1,206 @@
+{
+  "ticket": 152,
+  "blender": "5.2.0 LTS",
+  "input": "Drop/_Unpacked/Decimate/Pickable/Meshy_AI_Cream_Cushioned_Woode_0902130031_texture_fbx/Meshy_AI_Cream_Cushioned_Woode_0902130031_texture_fbx/Meshy_AI_Cream_Cushioned_Woode_0902130031_texture.fbx",
+  "output": "Drop/_BakeOut/Meshy_AI_Cream_Cushioned_Woode_0902130031_texture_fbx/Meshy_AI_Cream_Cushioned_Woode_0902130031_texture.fbx",
+  "gui": false,
+  "background": true,
+  "decimate_requested": true,
+  "decimate_kind": "Pickable",
+  "steps": [
+    "units: METRIC scale_length=1.0 METERS",
+    "imported FBX",
+    "163 light cleanup (merge 0.0001, fill holes, recalc normals) \u2192 3050441 tris, uv_layers=1",
+    "163 decimate COLLAPSE target=1500 ratio=0.0004917321790521436 \u2192 1499 tris uv_layers=1",
+    "floor-origin: AABB bottom-center (Blender min-Z=0), then Apply All Transforms",
+    "export_scene.fbx axis_forward=-Z axis_up=Y global_scale=1 apply_unit_scale FBX_SCALE_ALL bake_space_transform path_mode=STRIP",
+    "copied 4 sibling PNG maps (not .fbm)"
+  ],
+  "reasons": [],
+  "keywords_matched": [],
+  "ok": true,
+  "mesh_count": 1,
+  "non_mesh": [],
+  "mesh_names": [
+    "mesh_node"
+  ],
+  "world_bounds": {
+    "min": [
+      -0.608724,
+      -0.636965,
+      -0.95206
+    ],
+    "max": [
+      0.614601,
+      0.631728,
+      0.95053
+    ],
+    "size": [
+      1.223325,
+      1.268693,
+      1.90259
+    ]
+  },
+  "tris": 3050441,
+  "decimate": {
+    "enabled": true,
+    "recipe": "light_cleanup_then_collapse",
+    "voxel_remesh": false,
+    "voxel_remesh_note": "Parked: Voxel Remesh destroys UVs. 2026-09-02 probe on the 3.05M Meshy drop: Collapse alone hit 2899 tris with UVs intact (topology was 2 boundary / 3 non-manifold, not the spike's 6303/3837).",
+    "target_tris": 1500,
+    "target_tris_kind": "Pickable",
+    "target_tris_flagged_for_sam": false,
+    "target_tris_note": "JSON target_tris / target_tris_pickable / target_tris_nodes (Drop folder chooses category). Override with --target-tris.",
+    "longest_aabb_m": 1.90259,
+    "topology_before": {
+      "boundary_edges": 2,
+      "nonmanifold_edges": 3
+    },
+    "tris_raw": 3050441,
+    "verts_raw": 1525215,
+    "uv_layers_raw": 1,
+    "light_cleanup": {
+      "merge_op": "remove_doubles",
+      "merge_dist": 0.0001,
+      "fill_holes": true,
+      "normals_make_consistent": true
+    },
+    "topology_after_cleanup": {
+      "boundary_edges": 2,
+      "nonmanifold_edges": 3
+    },
+    "tris_after_cleanup": 3050441,
+    "uv_layers_after_cleanup": 1,
+    "tris_after_decimate": 1499,
+    "verts_after_decimate": 744,
+    "topology_after_decimate": {
+      "boundary_edges": 2,
+      "nonmanifold_edges": 3
+    },
+    "uv_layers_after_decimate": 1,
+    "ratio": 0.0004917321790521436,
+    "stall_multiple": 2.0,
+    "stall_limit_tris": 3000
+  },
+  "modifiers": [
+    {
+      "object": "mesh_node",
+      "type": "DECIMATE",
+      "mode": "COLLAPSE",
+      "ratio": 0.0004917321790521436,
+      "target_tris": 1500
+    }
+  ],
+  "decimate_before_tris": 3050441,
+  "decimate_ratio": 0.0004917321790521436,
+  "before_floor_origin": {
+    "label": "before_floor_origin",
+    "objects": [
+      {
+        "name": "mesh_node",
+        "type": "MESH",
+        "location": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rotation_euler_deg": [
+          -0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    ],
+    "world_bounds": {
+      "min": [
+        -0.609375,
+        -0.636227,
+        -0.951915
+      ],
+      "max": [
+        0.613928,
+        0.632228,
+        0.949967
+      ],
+      "size": [
+        1.223303,
+        1.268455,
+        1.901882
+      ]
+    }
+  },
+  "after_floor_origin": {
+    "label": "after_floor_origin",
+    "objects": [
+      {
+        "name": "mesh_node",
+        "type": "MESH",
+        "location": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rotation_euler_deg": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    ],
+    "world_bounds": {
+      "min": [
+        -0.611651,
+        -0.634228,
+        -0.0
+      ],
+      "max": [
+        0.611652,
+        0.634227,
+        1.901882
+      ],
+      "size": [
+        1.223303,
+        1.268455,
+        1.901882
+      ]
+    }
+  },
+  "after_floor_origin_bounds": {
+    "min": [
+      -0.611651,
+      -0.634228,
+      -0.0
+    ],
+    "max": [
+      0.611652,
+      0.634227,
+      1.901882
+    ],
+    "size": [
+      1.223303,
+      1.268455,
+      1.901882
+    ]
+  },
+  "tris_after_bake": 1499,
+  "output_exists": true,
+  "output_bytes": 80636,
+  "textures_copied": [
+    "Drop/_BakeOut/Meshy_AI_Cream_Cushioned_Woode_0902130031_texture_fbx/Meshy_AI_Cream_Cushioned_Woode_0902130031_texture.png",
+    "Drop/_BakeOut/Meshy_AI_Cream_Cushioned_Woode_0902130031_texture_fbx/Meshy_AI_Cream_Cushioned_Woode_0902130031_texture_metallic.png",
+    "Drop/_BakeOut/Meshy_AI_Cream_Cushioned_Woode_0902130031_texture_fbx/Meshy_AI_Cream_Cushioned_Woode_0902130031_texture_normal.png",
+    "Drop/_BakeOut/Meshy_AI_Cream_Cushioned_Woode_0902130031_texture_fbx/Meshy_AI_Cream_Cushioned_Woode_0902130031_texture_roughness.png"
+  ],
+  "baked_fbx": true,
+  "note_scale": "1 Blender unit = 1m = 1 Unity unit as authored. This script does not rescale. Ticket 150 scale multiplier + pivot offset are Unity-side."
+}

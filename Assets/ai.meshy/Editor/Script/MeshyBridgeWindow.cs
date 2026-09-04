@@ -1092,7 +1092,7 @@ public class MeshyBridgeWindow : EditorWindow
 		{
 			mat.SetTexture("_MetallicGlossMap", metallicGloss);
 			mat.SetFloat("_Metallic", 1f);
-			mat.SetFloat("_Smoothness", 1f);
+			mat.SetFloat("_Smoothness", 0.5f);
 			if (mat.HasProperty("_SmoothnessTextureChannel")) mat.SetFloat("_SmoothnessTextureChannel", 0f); // Metallic Alpha
 			mat.EnableKeyword("_METALLICSPECGLOSSMAP");
 		}
@@ -1182,7 +1182,7 @@ public class MeshyBridgeWindow : EditorWindow
 		{
 			mat.SetTexture("_MaskMap", maskMap);
 			if (mat.HasProperty("_Metallic")) mat.SetFloat("_Metallic", 1f);
-			if (mat.HasProperty("_Smoothness")) mat.SetFloat("_Smoothness", 1f);
+			if (mat.HasProperty("_Smoothness")) mat.SetFloat("_Smoothness", 0.5f);
 			mat.EnableKeyword("_MASKMAP");
 		}
 		else

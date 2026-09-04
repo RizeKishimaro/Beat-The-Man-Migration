@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9fa929396b36b4475b407fb9ec7c93b6, type: 3}
+  m_Name: Meshy_AI_Cream_Cushioned_Woode_0901111618_texture_fbx_Properties
+  m_EditorClassIdentifier: Assembly-CSharp::ObjectProperties
+  objectName: Meshy_AI_Cream_Cushioned_Woode_0901111618_texture_fbx
+  folder: {fileID: 102900000, guid: 2a45f98f8e3fb4732b0e41cc320a0f4b, type: 3}
+  kind: 0
+  pickupable: 1
+  approved: 0
+  prefabPath: 
+  weight: 0
+  price: 0
+  category: 
+  stackable: 0
+  sizeTier: 0
+  physicsGravity: 0
+  scaleMultiplier: 1
+  pivotOffset: {x: 0, y: 0, z: 0}
+  interaction: 0
+  placementMethod: 0
+  nodeCompat: 0
+  animationClips: []
+  animatorController: {fileID: 0}
+  sfx:
+    pickup: {fileID: 0}
+    drop: {fileID: 0}
+    use: {fileID: 0}
+    open: {fileID: 0}
+    custom: {fileID: 0}
+  uniqueProperties: []

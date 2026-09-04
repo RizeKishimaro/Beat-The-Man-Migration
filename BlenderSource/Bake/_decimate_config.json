@@ -1,0 +1,14 @@
+{
+  "ticket": 163,
+  "note": "Edit this file to change tri targets — no code change required. --target-tris on the bake CLI still wins for a single run.",
+  "target_tris": 1500,
+  "target_tris_pickable": 1500,
+  "target_tris_nodes": 1500,
+  "stall_multiple": 2.0,
+  "stall_note": "After Collapse, if tris > category_target * stall_multiple, bake exits 2 and copies the unmodified source to _Review. 2x of 1500 = 3000.",
+  "spike_longest_m": 0.81,
+  "spike_voxel_size": 0.0012,
+  "voxel_frac_of_longest": 0.0014814814814814814,
+  "voxel_min": 0.0002,
+  "voxel_max": 0.05
+}

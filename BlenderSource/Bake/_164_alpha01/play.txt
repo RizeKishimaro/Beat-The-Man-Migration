@@ -1,0 +1,45 @@
+=== Ticket 164 Alpha01 Play verify ===
+edit camera=True follow=True
+edit player=True grid=True
+entering Play (CameraFollow stays ON)
+entered Play
+play spawn player=(-0.58, 0.00, -0.50) cam=(-8.58, 7.00, -8.50)
+ProceduralBounceMotion present=True
+Character_Base instance=True
+shot idle 1000x631 bytes=233205
+--- CHARACTER idle ---
+idle planarSpeed=0.00 bounceMoving=False bounceWave=0.00
+shot walk 1000x631 bytes=238113
+--- CHARACTER walk ---
+walk planarSpeed=5.50 bounceMoving=True bounceWave=-0.76
+walk followEnabled=True target=Player ortho=6.00 camToOffset=1.30 playerDelta=2.00
+CHECK camera follow on + ortho~6: True
+CHECK camera tracks player offset: True
+shot cam 1000x631 bytes=241969
+--- CAMERA ---
+after-walk followEnabled=True target=Player ortho=6.00 camToOffset=0.43 playerDelta=3.06
+CHECK camera follow on + ortho~6: True
+CHECK camera tracks player offset: True
+--- GRID ---
+GridSystem.Instance=True origin=(0.00, 0.00, 0.00) cellSize=1
+GridOverlay present=True visibleBeforeToggle=False
+TryOccupy (3,3) free=True ok=True IsOccupied=True occupant=True
+Release (3,3) stillOccupied=False
+WorldFloor=True Item_Crate_Base=True
+crate world=(0.90, 0.00, -1.20) cell=(0, -2)
+CHECK grid instance+occupy: True
+CHECK overlay component: True
+GridOverlay.Visible forced true for overlay shot
+shot grid 1000x631 bytes=279444
+warp player to (0.20, 0.00, -1.00)
+--- CHARACTER carry ---
+carrying=True held=Item_Crate_Base
+shot carry 1000x631 bytes=273806
+PutDown after carry shot (seat jump ignores Space while carrying)
+warp player to (-0.58, 0.00, -0.50)
+--- CHARACTER seat jump ---
+jumpOnSeat mounted=False jumping=True
+shot seat 1000x631 bytes=267627
+CameraFollow still enabled at end=True
+scene dirty (must not save)=False
+RESULT=OK inspect Temp/alpha01/*.png

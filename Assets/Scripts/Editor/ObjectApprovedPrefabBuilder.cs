@@ -62,9 +62,9 @@ public static class ObjectApprovedPrefabBuilder
 
             AttachStubAndProperties(root, folder, name, props);
 
-            if (AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath) != null)
-                AssetDatabase.DeleteAsset(prefabPath);
-
+            // Ticket 162 — overwrite in place so the prefab GUID (and scene
+            // instances) survive scale/pivot rebuilds. SaveAsPrefabAsset
+            // replaces contents; do not DeleteAsset first.
             GameObject saved = PrefabUtility.SaveAsPrefabAsset(root, prefabPath, out bool ok);
             if (!ok || saved == null)
                 throw new InvalidOperationException("SaveAsPrefabAsset failed: " + prefabPath);

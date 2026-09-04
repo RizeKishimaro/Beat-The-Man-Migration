@@ -1,0 +1,86 @@
+{
+  "ticket": 163,
+  "config": {
+    "target_tris": 2900,
+    "voxel_frac_of_longest": 0.0014814814814814814,
+    "voxel_min": 0.0002,
+    "voxel_max": 0.05
+  },
+  "voxel_spike_0.81": 0.0012000000000000001,
+  "voxel_3x_2.43": 0.0036,
+  "formula_ok": true,
+  "flag_target_tris": "Default target_tris=2900 (spike 2900). Documented budget 500-1500. Sam: keep 2900 or lower? Edit _decimate_config.json.",
+  "source": "Assets/Objects/Pickable/Meshy_AI_Cream_Cushioned_Woode_0901111846_texture_fbx/Meshy_AI_Cream_Cushioned_Woode_0901111846_texture.fbx",
+  "normal_exit": 0,
+  "decimate_exit": 0,
+  "normal_decimate_requested": false,
+  "decimate_decimate_requested": true,
+  "normal_tris_in": 858,
+  "normal_tris_out": 858,
+  "normal_tris_unchanged": true,
+  "normal_steps_have_163": false,
+  "existing_flow_unchanged": true,
+  "decimate_block": {
+    "longest_aabb_m": 1.0,
+    "voxel_size": null,
+    "tris_raw": 858,
+    "tris_after_cleanup": null,
+    "tris_after_decimate": 858,
+    "uv_layers_raw": 1,
+    "uv_layers_after_decimate": null,
+    "voxel_remesh": false,
+    "topology_before": {
+      "boundary_edges": 0,
+      "nonmanifold_edges": 0
+    }
+  },
+  "downstream_incoming_unchanged": "Assets/Objects/_Incoming/{Pickable,Nodes} \u2014 148/149/160 Calculate 90 / 162 still apply",
+  "decimate_skipped": "already <= target and manifold",
+  "dense": {
+    "make_exit": 0,
+    "make_tail": "Blender 5.2.0 LTS (hash fbe6228777e7 built 2026-07-14 01:31:22)\nBlenderMCP: cannot start server in background mode (blender -b) - commands would never execute\nBlenderMCP: run Blender with a GUI, or use a virtual display: xvfb-run -a blender\nBlenderMCP addon registered\nBlenderMCP server stopped\nBlenderMCP addon unregistered\n\nFBX export starting... '/Users/sammy/BeatTheMan/Temp/bake163/dense/spike_scale.fbx'\nexport finished in 0.0062 sec.\n\nFBX export starting... '/Users/sammy/BeatTheMan/Temp/bake163/dense/triple_scale.fbx'\nexport finished in 0.0038 sec.\nDENSE_OK /Users/sammy/BeatTheMan/Temp/bake163/dense/spike_scale.fbx longest 0.81\nDENSE_OK /Users/sammy/BeatTheMan/Temp/bake163/dense/triple_scale.fbx longest 2.43\n",
+    "spike": {
+      "exit_ok": true,
+      "decimate_requested": true,
+      "longest_aabb_m": 0.81,
+      "voxel_size": null,
+      "tris_raw": 7420,
+      "tris_after_cleanup": 7500,
+      "tris_after_decimate": 2900,
+      "topology_before": {
+        "boundary_edges": 88,
+        "nonmanifold_edges": 88
+      },
+      "uv_layers_raw": 1,
+      "uv_layers_after_decimate": 1,
+      "skipped": null,
+      "voxel_remesh": false,
+      "steps_have_163_collapse": true,
+      "exit": 0
+    },
+    "triple": {
+      "exit_ok": true,
+      "decimate_requested": true,
+      "longest_aabb_m": 2.43,
+      "voxel_size": null,
+      "tris_raw": 7420,
+      "tris_after_cleanup": 7500,
+      "tris_after_decimate": 2900,
+      "topology_before": {
+        "boundary_edges": 88,
+        "nonmanifold_edges": 88
+      },
+      "uv_layers_raw": 1,
+      "uv_layers_after_decimate": 1,
+      "skipped": null,
+      "voxel_remesh": false,
+      "steps_have_163_collapse": true,
+      "exit": 0
+    },
+    "aabb_scales_3x": true,
+    "spike_ok": true,
+    "triple_ok": true,
+    "ok": true
+  },
+  "ok": true
+}

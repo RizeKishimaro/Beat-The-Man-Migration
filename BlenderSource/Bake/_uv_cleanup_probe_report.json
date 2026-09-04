@@ -1,0 +1,127 @@
+{
+  "ticket": 163,
+  "probe": "option1_light_cleanup_then_collapse",
+  "source": "Temp/bake163/uv_src/Meshy_AI_Cream_Cushioned_Woode_0902130031_texture_fbx/Meshy_AI_Cream_Cushioned_Woode_0902130031_texture.fbx",
+  "target_tris": 2900,
+  "spike_no_cleanup_stall": 31000,
+  "raw": {
+    "tris": 3050441,
+    "verts": 1525215,
+    "topology": {
+      "boundary_edges": 2,
+      "nonmanifold_edges": 3
+    },
+    "uv_layers": 1,
+    "uv_loops": 9151323,
+    "uv_nonzero": 9151323,
+    "uv_bounds": [
+      0.0,
+      0.0,
+      1.0,
+      0.9753
+    ],
+    "uv_intact": true
+  },
+  "current_pipeline_on_this_drop": {
+    "note": "already ran via Drop/Decimate \u2014 voxel remesh then collapse",
+    "tris_raw": 3050441,
+    "tris_after_remesh": 3714296,
+    "tris_after_decimate": 2900,
+    "uv_intact": false
+  },
+  "baseline_no_cleanup": {
+    "label": "baseline_collapse",
+    "cleanup": false,
+    "merge_op": null,
+    "merge_dist": null,
+    "after_cleanup": null,
+    "after_decimate": {
+      "tris": 2899,
+      "verts": 1444,
+      "topology": {
+        "boundary_edges": 2,
+        "nonmanifold_edges": 3
+      },
+      "uv_layers": 1,
+      "uv_loops": 8697,
+      "uv_nonzero": 8697,
+      "uv_bounds": [
+        0.0004,
+        0.0,
+        0.9995,
+        0.9729
+      ],
+      "uv_intact": true
+    },
+    "decimate_ratio": 0.0009506822128341443,
+    "decimate_skipped": null,
+    "elapsed_sec": 17.75,
+    "exported": "Temp/bake163/uv_probe/baseline_collapse.fbx",
+    "steps": [],
+    "hit_target": true,
+    "stalled_near_31k": false,
+    "uv_intact": true
+  },
+  "option1_light_cleanup": {
+    "label": "option1_cleanup_collapse",
+    "cleanup": true,
+    "merge_op": "remove_doubles",
+    "merge_dist": 0.0001,
+    "after_cleanup": {
+      "tris": 3050441,
+      "verts": 1525215,
+      "topology": {
+        "boundary_edges": 2,
+        "nonmanifold_edges": 3
+      },
+      "uv_layers": 1,
+      "uv_loops": 9151323,
+      "uv_nonzero": 9151323,
+      "uv_bounds": [
+        0.0,
+        0.0,
+        1.0,
+        0.9753
+      ],
+      "uv_intact": true
+    },
+    "after_decimate": {
+      "tris": 2899,
+      "verts": 1444,
+      "topology": {
+        "boundary_edges": 2,
+        "nonmanifold_edges": 3
+      },
+      "uv_layers": 1,
+      "uv_loops": 8697,
+      "uv_nonzero": 8697,
+      "uv_bounds": [
+        0.0004,
+        0.0,
+        0.9995,
+        0.9729
+      ],
+      "uv_intact": true
+    },
+    "decimate_ratio": 0.0009506822128341443,
+    "decimate_skipped": null,
+    "elapsed_sec": 27.12,
+    "exported": "Temp/bake163/uv_probe/option1_cleanup_collapse.fbx",
+    "steps": [
+      "light cleanup merge=remove_doubles dist=0.0001 fill_holes normals_make_consistent"
+    ],
+    "hit_target": true,
+    "stalled_near_31k": false,
+    "uv_intact": true
+  },
+  "vs_31k_stall": {
+    "baseline_tris": 2899,
+    "option1_tris": 2899,
+    "baseline_closer_than_31k": true,
+    "option1_closer_than_31k": true,
+    "option1_reached_target": true,
+    "option1_uv_intact": true,
+    "baseline_uv_intact": true
+  },
+  "recommendation": "option1_enough_skip_option2"
+}

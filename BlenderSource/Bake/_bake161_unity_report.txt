@@ -1,0 +1,23 @@
+=== Ticket 161 duplicate-folder / printer cell-fit verify ===
+stale Nodes watercooler gone: True
+stale Nodes printer-source gone: True
+CHECK stale folders gone: True
+--- Stub class names ---
+Assets/Objects/Pickable/CreamChair_Raw153/CreamChair_Raw153.cs → CreamChair_Raw153
+Assets/Objects/Pickable/Meshy_AI_Cream_Cushioned_Woode_0901111618_texture_fbx/Meshy_AI_Cream_Cushioned_Woode_0901111618_texture_fbx.cs → Meshy_AI_Cream_Cushioned_Woode_0901111618_texture_fbx
+Assets/Objects/Pickable/Meshy_AI_Cream_Cushioned_Woode_0901111846_texture_fbx/Meshy_AI_Cream_Cushioned_Woode_0901111846_texture_fbx.cs → Meshy_AI_Cream_Cushioned_Woode_0901111846_texture_fbx
+Assets/Objects/Pickable/Meshy_AI_Orange_Office_Chair_0826075021_texture_fbx/Meshy_AI_Orange_Office_Chair_0826075021_texture_fbx.cs → Meshy_AI_Orange_Office_Chair_0826075021_texture_fbx
+Assets/Objects/Pickable/Meshy_AI_Tiny_Blue_Water_Coole_0901110901_texture_fbx/Meshy_AI_Tiny_Blue_Water_Coole_0901110901_texture_fbx.cs → Meshy_AI_Tiny_Blue_Water_Coole_0901110901_texture_fbx
+Assets/Objects/Pickable/printer/printer.cs → printer
+Assets/Objects/Nodes/Meshy_AI__0901083831_texture_fbx/Meshy_AI__0901083831_texture_fbx.cs → Meshy_AI__0901083831_texture_fbx
+CHECK unique stub classes: True
+--- Printer cell-fit ---
+kind: Pickable
+exemptFromCellFitScaling: False
+scaleMultiplier: 1.556231
+fbx: Assets/Objects/Pickable/printer/Meshy_AI_Cream_Cushioned_Woode_0901123805_texture.fbx
+computed fit: 1.556231 maxXZ=0.642578
+CHECK printer cell-fit: True
+
+RESULT=OK
+PASS=True

@@ -3,9 +3,10 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Ticket 150/155 — CustomEditor for ObjectProperties. Surfaces Approve as a
-/// banner+button, scale/pivot overrides with live scene preview, and blank
-/// judgment fields (149 + 155). Approval is a status flag, not a lock.
+/// Ticket 150/155/159/162 — CustomEditor for ObjectProperties. Surfaces Approve as a
+/// banner+button, scale/pivot overrides with live scene preview, 1×1m cell-fit
+/// (159), and blank judgment fields (149 + 155). Approval is a status flag, not a lock.
+/// Ticket 162: approved prefab Wrapper rebuilds when scale/pivot changes.
 /// </summary>
 [CustomEditor(typeof(ObjectProperties))]
 public class ObjectPropertiesEditor : Editor
@@ -15,6 +16,7 @@ public class ObjectPropertiesEditor : Editor
     SerializedProperty kind;
     SerializedProperty pickupable;
     SerializedProperty approved;
+    SerializedProperty exemptFromCellFitScaling;
     SerializedProperty weight;
     SerializedProperty price;
     SerializedProperty category;
@@ -34,6 +36,11 @@ public class ObjectPropertiesEditor : Editor
     static readonly Color PendingBg = new Color(0.85f, 0.55f, 0.12f, 1f);
     static readonly Color ApprovedBg = new Color(0.18f, 0.55f, 0.28f, 1f);
 
+    string cachedFbxPath;
+    bool cachedHaveFit;
+    float cachedFit;
+    float cachedMaxXZ;
+
     static readonly ObjectNodeCompat[] NodeCompatFlags =
     {
         ObjectNodeCompat.Counter,
@@ -50,7 +57,9 @@ public class ObjectPropertiesEditor : Editor
         kind = serializedObject.FindProperty("kind");
         pickupable = serializedObject.FindProperty("pickupable");
         approved = serializedObject.FindProperty("approved");
+        exemptFromCellFitScaling = serializedObject.FindProperty("exemptFromCellFitScaling");
         weight = serializedObject.FindProperty("weight");
+        cachedFbxPath = null;
         price = serializedObject.FindProperty("price");
         category = serializedObject.FindProperty("category");
         stackable = serializedObject.FindProperty("stackable");
@@ -77,14 +86,14 @@ public class ObjectPropertiesEditor : Editor
         DrawIdentity();
         EditorGUILayout.Space(6);
 
-        bool transformChanged = DrawTransformOverrides();
+        bool scalePivotChanged = DrawTransformOverrides();
         EditorGUILayout.Space(6);
 
         DrawJudgment();
 
         serializedObject.ApplyModifiedProperties();
 
-        if (transformChanged)
+        if (scalePivotChanged)
         {
             var props = (ObjectProperties)target;
             if (ObjectPropertiesPreview.FindExistingRoot(props) != null)
@@ -92,6 +101,20 @@ public class ObjectPropertiesEditor : Editor
             else
                 ObjectPropertiesPreview.EnsurePreview(props);
             PendingReviewWindow.RequestRefresh();
+
+            // Ticket 162 — approved prefab is a snapshot; rewrite Wrapper
+            // when scale/pivot changes. Preview-only refresh does not Build.
+            if (approved.boolValue)
+            {
+                try
+                {
+                    ObjectApprovedPrefabBuilder.Build(props);
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogError("[ObjectPropertiesEditor] prefab rebuild failed: " + e.Message);
+                }
+            }
         }
     }
 
@@ -163,6 +186,60 @@ public class ObjectPropertiesEditor : Editor
     {
         EditorGUILayout.LabelField("Transform overrides", EditorStyles.boldLabel);
 
+        bool isNode = kind.enumValueIndex == (int)ObjectKind.Node;
+        var props = (ObjectProperties)target;
+        bool haveFit = TryCachedCellFit(props, out float fit, out float maxXZ);
+
+        if (isNode)
+        {
+            using (new EditorGUI.DisabledScope(true))
+            {
+                EditorGUILayout.PropertyField(
+                    exemptFromCellFitScaling,
+                    new GUIContent("Exempt From Cell-Fit Scaling"));
+            }
+            EditorGUILayout.HelpBox(
+                "Nodes skip cell-fit (real-world / 152). This flag has no effect.",
+                MessageType.Info);
+        }
+        else
+        {
+            EditorGUILayout.PropertyField(
+                exemptFromCellFitScaling,
+                new GUIContent(
+                    "Exempt From Cell-Fit Scaling",
+                    "Opt out of 1×1m cell-fit. Occupancy stays 1×1. Does not rewrite Scale multiplier."));
+        }
+
+        if (haveFit)
+        {
+            EditorGUILayout.LabelField(
+                "Cell-fit would be",
+                fit.ToString("0.###") + "  (footprint max(X,Z) = " + maxXZ.ToString("0.###") + " m)");
+        }
+        else
+        {
+            EditorGUILayout.LabelField("Cell-fit would be", "(no mesh bounds)");
+        }
+
+        bool changed = false;
+        if (!isNode)
+        {
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("Apply cell-fit now", GUILayout.Height(22)))
+            {
+                if (haveFit)
+                    scaleMultiplier.floatValue = Mathf.Max(0.01f, fit);
+                changed = true;
+            }
+            if (GUILayout.Button("Reset to 1", GUILayout.Height(22)))
+            {
+                scaleMultiplier.floatValue = 1f;
+                changed = true;
+            }
+            EditorGUILayout.EndHorizontal();
+        }
+
         EditorGUI.BeginChangeCheck();
         float scale = Mathf.Max(0.01f, scaleMultiplier.floatValue);
         scale = EditorGUILayout.FloatField(
@@ -172,20 +249,36 @@ public class ObjectPropertiesEditor : Editor
         EditorGUILayout.PropertyField(
             pivotOffset,
             new GUIContent("Pivot Offset", "Mesh-child localPosition under the scaled wrapper."));
-        bool changed = EditorGUI.EndChangeCheck();
+        changed = changed || EditorGUI.EndChangeCheck();
+
+        EditorGUILayout.HelpBox(
+            "Scale is on Wrapper; root stays 1. Approved prefab rebuilds when you change scale or pivot.",
+            MessageType.Info);
 
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("Apply / Refresh Preview", GUILayout.Height(24)))
         {
             serializedObject.ApplyModifiedProperties();
             ObjectPropertiesPreview.EnsurePreview((ObjectProperties)target);
-            changed = true;
         }
         if (GUILayout.Button("Clear Preview", GUILayout.Height(24)))
             ObjectPropertiesPreview.ClearAllPreviews();
         EditorGUILayout.EndHorizontal();
 
         return changed;
+    }
+
+    bool TryCachedCellFit(ObjectProperties props, out float fit, out float maxXZ)
+    {
+        string fbx = ObjectPropertiesPreview.FindFbxFor(props);
+        if (fbx != cachedFbxPath)
+        {
+            cachedFbxPath = fbx;
+            cachedHaveFit = ObjectCellFitScaling.TryComputeForFbx(fbx, out cachedFit, out cachedMaxXZ);
+        }
+        fit = cachedFit;
+        maxXZ = cachedMaxXZ;
+        return cachedHaveFit;
     }
 
     void DrawJudgment()

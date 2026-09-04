@@ -1,0 +1,91 @@
+=== Ticket 163 close-out ===
+scene=Assets/Scenes/GridFoundation.unity
+already on GridFoundation
+--- stall zip → Drop/Decimate/Pickable ---
+dropped Drop/Decimate/Pickable/Ticket163_StallNet.zip
+Drop/_NeedsReview: True Drop/_NeedsReview/Decimate/Pickable/Ticket163_StallNet
+Assets/Objects/_Review NEEDS_REVIEW.json: True
+Incoming absent: True
+dest Pickable absent: True
+baked FBX absent: True
+NEEDS_REVIEW.json:
+{
+  "ticket": 152,
+  "status": "needs_review",
+  "input": "Drop/_Unpacked/Decimate/Pickable/Ticket163_StallNet/Ticket163_StallNet.fbx",
+  "review_dir": "Assets/Objects/_Review/Ticket163_StallNet",
+  "reasons": [
+    "decimate_stall tris_after=24000 > 3000 (target=1500 \u00d7 2.0x)"
+  ],
+  "keywords_matched": [],
+  "mesh_count": 1,
+  "mesh_names": [
+    "Ticket163Stall"
+  ],
+  "world_bounds": {
+    "min": [
+      -0.005,
+      0.0,
+      -0.0
+    ],
+    "max": [
+      1.985,
+      1.59,
+      0.01
+    ],
+    "size": [
+      1.99,
+      1.59,
+      0.01
+    ]
+  },
+  "copied": [
+    "Assets/Objects/_Review/Ticket163_StallNet/Ticket163_StallNet.fbx"
+  ],
+  "baked_fbx": false,
+  "halted": true,
+  "decimate": {
+    "enabled": true,
+    "recipe": "light_cleanup_then_collapse",
+    "voxel_remesh": false,
+    "voxel_remesh_note": "Parked: Voxel Remesh destroys UVs. 2026-09-02 probe on the 3.05M Meshy drop: Collapse alone hit 2899 tris with UVs intact (topology was 2 boundary / 3 non-manifold, not the spike's 6303/3837).",
+    "target_tris": 1500,
+    "target_tris_kind": "Pickable",
+    "target_tris_flagged_for_sam": false,
+    "target_tris_note": "JSON target_tris / target_tris_pickable / target_tris_nodes (Drop folder chooses category). Override with --target-tris.",
+    "longest_aabb_m": 1.99,
+    "topology_before": {
+      "boundary_edges": 48000,
+      "nonmanifold_edges": 56000
+    },
+    "tris_raw": 24000,
+    "verts_raw": 40000,
+    "uv_layers_raw": 0,
+    "light_cleanup": {
+      "merge_op": "remove_doubles",
+      "merge_dist": 0.0001,
+      "fill_holes": true,
+      "normals_make_consistent": true
+    },
+    "topology_after_cleanup": {
+      "boundary_edges": 48000,
+      "nonmanifold_edges": 56000
+    },
+    "tris_after_cleanup": 24000,
+    "uv_layers_after_cleanup": 0,
+    "tris_after_decimate": 24000,
+    "verts_after_decimate": 40000,
+    "topology_after_decimate": {
+      "boundary_edges": 48000,
+      "nonmanifold_edges": 56000
+    },
+    "uv_layers_after_decimate": 0,
+    "ratio": 0.0625,
+    "stall_multiple": 2.0,
+    "stall_limit_tris": 3000,
+    "stalled": true
+  },
+  "tris": 24000,
+  "tris_after_decimate": 24000
+}
+
