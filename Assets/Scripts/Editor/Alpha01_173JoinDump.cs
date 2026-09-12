@@ -19,7 +19,7 @@ public static class Alpha01_173JoinDump
     const string ShotDir = "Temp/alpha01_173";
     const string ScenePath = Alpha01SceneSetup.ScenePath;
     const string PendingKey = "Alpha01_173Join.pending";
-    const float Ext = 8f;
+    const float Ext = 6f;
 
     static int sPhase;
     static int sWait;
@@ -386,7 +386,7 @@ public static class Alpha01_173JoinDump
             float thick = enc.max.x - enc.min.x;
             float center = (enc.min.x + enc.max.x) * 0.5f;
             sLog.AppendLine(d.name + " shared alongZ=" + along + " thickX=" + thick + " centerX=" + center);
-            Check(d.name + " shared along 8", Mathf.Abs(along - Ext) < Tol);
+            Check(d.name + " shared along 6", Mathf.Abs(along - Ext) < Tol);
             Check(d.name + " shared thick 0.3", Mathf.Abs(thick - 0.3f) < Tol);
             Check(d.name + " shared on boundary", Mathf.Abs(center - boundary) < Tol);
 
@@ -415,7 +415,7 @@ public static class Alpha01_173JoinDump
             float thick = enc.max.z - enc.min.z;
             float center = (enc.min.z + enc.max.z) * 0.5f;
             sLog.AppendLine(d.name + " shared alongX=" + along + " thickZ=" + thick + " centerZ=" + center);
-            Check(d.name + " shared along 8", Mathf.Abs(along - Ext) < Tol);
+            Check(d.name + " shared along 6", Mathf.Abs(along - Ext) < Tol);
             Check(d.name + " shared thick 0.3", Mathf.Abs(thick - 0.3f) < Tol);
             Check(d.name + " shared on boundary", Mathf.Abs(center - boundary) < Tol);
 

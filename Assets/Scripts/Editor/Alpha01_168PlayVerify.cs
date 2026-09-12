@@ -286,7 +286,7 @@ public static class Alpha01_168PlayVerify
         var cells = new System.Collections.Generic.List<GridCoord>(
             grid.FootprintCells(anchor, new Vector2Int(RoomSlotGrid.SlotCells, RoomSlotGrid.SlotCells)));
         bool occupied = grid.TryOccupy(cells, "168-probe");
-        sLog.AppendLine("probe occupy 8x8=" + occupied);
+        sLog.AppendLine("probe occupy 6x6=" + occupied);
         var prompt = Object.FindAnyObjectByType<RoomSlotPlusPrompt>();
         if (prompt != null)
             prompt.SendMessage("LateUpdate", SendMessageOptions.DontRequireReceiver);

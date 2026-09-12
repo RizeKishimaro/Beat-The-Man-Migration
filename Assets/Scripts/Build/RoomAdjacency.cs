@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Ticket 172 — after 169 spawn, replace facing walls of adjacent 8×8 rooms
+/// Ticket 172 — after 169 spawn, replace facing walls of adjacent 6×6 rooms
 /// with one shared wall + ShopDoorLeaf pair at the tile boundary.
 /// Placement-time only. Does not edit DefaultBuilding meshes.
 /// </summary>
@@ -14,12 +14,12 @@ public static class RoomAdjacency
     public const int SideNegZ = 8;
     public const string SharedRootPrefix = "SharedWall";
 
-    const float Ext = 8f;
+    const float Ext = 6f;
     const float WMin = 0f;
-    const float WMax = 8f;
+    const float WMax = 6f;
     const float WallT = 0.3f;
     const float WallH = 3.0f;
-    const float DoorW = 1.8f;
+    const float DoorW = 1.5f;
     const float DoorH = 2.2f;
     const float LeafT = 0.06f;
 

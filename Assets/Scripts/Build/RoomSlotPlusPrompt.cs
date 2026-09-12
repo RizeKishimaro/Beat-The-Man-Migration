@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 using System.Collections.Generic;
 
 /// <summary>
-/// Ticket 168 — world-space prompt at the centre of the 8×8 slot the player is in,
+/// Ticket 168 — world-space prompt at the centre of the 6×6 slot the player is in,
 /// only when that slot is unoccupied. E / gamepad South (A) opens the stub menu.
 /// Dashed border: Figma 8px corner radius, cyan dashes. Centre: SlotBuildIcon.
 /// </summary>
@@ -12,13 +12,16 @@ public class RoomSlotPlusPrompt : MonoBehaviour
 {
     public const string PlusName = "RoomSlotPlus";
     const float PlusHeight = 1.15f;
+    const float BobAmp = 0.08f;
+    const float BobHz = 0.35f;
     const float BorderY = 0.04f;
+    const float FigmaPanelPx = 381f;
     const float CornerRadiusPx = 8f;
-    const float StrokePx = 4f;
+    const float StrokePx = 5f;
     const float IconPx = 39f;
-    const float DashPx = 28f;
-    const float GapPx = 14f;
-    static readonly Color DashColor = new Color(0.227f, 0.780f, 0.965f, 1f);
+    const float DashPx = 13f;
+    const float GapPx = 13f;
+    static readonly Color DashColor = new Color(0f, 0.75f, 1f, 1f);
     const string IconResource = "UI/SlotBuildIcon";
 
     BuildMenuController menu;
@@ -67,7 +70,8 @@ public class RoomSlotPlusPrompt : MonoBehaviour
         Vector3 center = RoomSlotGrid.SlotCenterWorld(grid, anchor);
         float worldPerPx = WorldPerPixel();
         float iconWorld = IconPx * worldPerPx;
-        plusRoot.position = new Vector3(center.x, PlusHeight, center.z);
+        float bob = Mathf.Sin(Time.time * (Mathf.PI * 2f * BobHz)) * BobAmp;
+        plusRoot.position = new Vector3(center.x, PlusHeight + bob, center.z);
         plusRoot.localScale = new Vector3(iconWorld, iconWorld, iconWorld);
 
         Camera cam = Camera.main;
@@ -178,10 +182,11 @@ public class RoomSlotPlusPrompt : MonoBehaviour
         if (borderMesh != null)
             Destroy(borderMesh);
 
-        float radius = CornerRadiusPx * worldPerPx;
-        float stroke = StrokePx * worldPerPx;
-        float dash = DashPx * worldPerPx;
-        float gap = GapPx * worldPerPx;
+        float s = slotSize / FigmaPanelPx;
+        float radius = CornerRadiusPx * s;
+        float stroke = StrokePx * s;
+        float dash = DashPx * s;
+        float gap = GapPx * s;
 
         var verts = new List<Vector3>(256);
         var indices = new List<int>(256);
@@ -205,40 +210,147 @@ public class RoomSlotPlusPrompt : MonoBehaviour
         float gap)
     {
         radius = Mathf.Clamp(radius, 0.01f, size * 0.45f);
-        var path = new List<Vector3>(128);
-        AppendRoundedRectPath(path, size, radius);
-        float period = Mathf.Max(0.05f, dash + gap);
         float halfW = stroke * 0.5f;
+        float straight = size - 2f * radius;
+        float arcLen = 0.5f * Mathf.PI * radius;
+        float period = Mathf.Max(0.05f, dash + gap);
+        float phase = Mathf.Repeat(-(straight + arcLen * 0.5f - dash * 0.5f), period);
+
+        var path = new List<Vector3>(128);
+        for (int side = 0; side < 4; side++)
+        {
+            var one = new List<Vector3>(32);
+            AppendOneSide(one, size, radius);
+            RotatePath90(one, size, side);
+            int i0 = path.Count == 0 ? 0 : 1;
+            for (int i = i0; i < one.Count; i++)
+                path.Add(one[i]);
+        }
+        DashPath(verts, indices, path, dash, gap, halfW, phase, true);
+    }
+
+    static void AppendOneSide(List<Vector3> path, float size, float r)
+    {
+        const int Arc = 12;
+        AddLine(path, new Vector3(r, 0f, 0f), new Vector3(size - r, 0f, 0f));
+        AddArc(path, new Vector3(size - r, 0f, r), r, -Mathf.PI * 0.5f, 0f, Arc);
+    }
+
+    static void RotatePath90(List<Vector3> path, float size, int times)
+    {
+        float cx = size * 0.5f;
+        float cz = size * 0.5f;
+        for (int n = 0; n < times; n++)
+        {
+            for (int i = 0; i < path.Count; i++)
+            {
+                float x = path[i].x - cx;
+                float z = path[i].z - cz;
+                path[i] = new Vector3(cx - z, 0f, cz + x);
+            }
+        }
+    }
+
+    static void DashPath(
+        List<Vector3> verts,
+        List<int> indices,
+        List<Vector3> path,
+        float dash,
+        float gap,
+        float halfW,
+        float phase,
+        bool closed)
+    {
+        float period = Mathf.Max(0.05f, dash + gap);
         float pathLen = 0f;
         for (int i = 0; i < path.Count - 1; i++)
             pathLen += Vector3.Distance(path[i], path[i + 1]);
+        if (closed && path.Count > 1)
+            pathLen += Vector3.Distance(path[path.Count - 1], path[0]);
         if (pathLen < 0.01f)
             return;
 
-        float t = 0f;
+        float step = Mathf.Max(halfW * 0.45f, 0.02f);
+        float t = Mathf.Repeat(phase, period);
         while (t < pathLen)
         {
-            float t1 = Mathf.Min(t + dash, pathLen);
-            SamplePath(path, t, out Vector3 a, out Vector3 ta);
-            SamplePath(path, t1, out Vector3 b, out Vector3 tb);
-            Vector3 pa = Vector3.Cross(Vector3.up, ta).normalized;
-            Vector3 pb = Vector3.Cross(Vector3.up, tb).normalized;
-            AddDashQuad(verts, indices, a, b, pa, pb, halfW);
+            float t1 = t + dash;
+            if (t1 <= pathLen)
+            {
+                DrawDashOpen(verts, indices, path, pathLen, t, t1, halfW, step, closed);
+            }
+            else
+            {
+                DrawDashOpen(verts, indices, path, pathLen, t, pathLen, halfW, step, closed);
+                if (closed)
+                    DrawDashOpen(verts, indices, path, pathLen, 0f, t1 - pathLen, halfW, step, closed);
+            }
             t += period;
         }
     }
 
-    static void AppendRoundedRectPath(List<Vector3> path, float size, float r)
+    static void DrawDashOpen(
+        List<Vector3> verts,
+        List<int> indices,
+        List<Vector3> path,
+        float pathLen,
+        float t0,
+        float t1,
+        float halfW,
+        float step,
+        bool closed)
     {
-        const int Arc = 8;
-        AddLine(path, new Vector3(r, 0f, 0f), new Vector3(size - r, 0f, 0f));
-        AddArc(path, new Vector3(size - r, 0f, r), r, -Mathf.PI * 0.5f, 0f, Arc);
-        AddLine(path, new Vector3(size, 0f, r), new Vector3(size, 0f, size - r));
-        AddArc(path, new Vector3(size - r, 0f, size - r), r, 0f, Mathf.PI * 0.5f, Arc);
-        AddLine(path, new Vector3(size - r, 0f, size), new Vector3(r, 0f, size));
-        AddArc(path, new Vector3(r, 0f, size - r), r, Mathf.PI * 0.5f, Mathf.PI, Arc);
-        AddLine(path, new Vector3(0f, 0f, size - r), new Vector3(0f, 0f, r));
-        AddArc(path, new Vector3(r, 0f, r), r, Mathf.PI, Mathf.PI * 1.5f, Arc);
+        if (t1 - t0 < 0.0001f)
+            return;
+        SamplePathClosed(path, pathLen, t0, closed, out Vector3 prev, out Vector3 tanPrev);
+        AddDisc(verts, indices, prev, halfW, 10);
+        float s = t0;
+        while (s < t1 - 0.0001f)
+        {
+            float s2 = Mathf.Min(s + step, t1);
+            SamplePathClosed(path, pathLen, s2, closed, out Vector3 cur, out Vector3 tanCur);
+            Vector3 pa = Vector3.Cross(Vector3.up, tanPrev).normalized;
+            Vector3 pb = Vector3.Cross(Vector3.up, tanCur).normalized;
+            if (pa.sqrMagnitude > 0.01f && pb.sqrMagnitude > 0.01f)
+                AddDashQuad(verts, indices, prev, cur, pa, pb, halfW);
+            AddDisc(verts, indices, cur, halfW, 10);
+            prev = cur;
+            tanPrev = tanCur;
+            s = s2;
+        }
+    }
+
+    static void SamplePathClosed(
+        List<Vector3> path,
+        float pathLen,
+        float dist,
+        bool closed,
+        out Vector3 pos,
+        out Vector3 tan)
+    {
+        if (closed && pathLen > 0.01f)
+            dist = Mathf.Repeat(dist, pathLen);
+        float remain = dist;
+        int last = path.Count - 1;
+        int segCount = closed ? path.Count : last;
+        for (int i = 0; i < segCount; i++)
+        {
+            Vector3 a = path[i];
+            Vector3 b = path[(i + 1) % path.Count];
+            Vector3 d = b - a;
+            float len = d.magnitude;
+            if (len < 1e-5f)
+                continue;
+            if (remain <= len)
+            {
+                pos = a + d * (remain / len);
+                tan = d / len;
+                return;
+            }
+            remain -= len;
+        }
+        pos = path[last];
+        tan = (path[last] - path[last - 1]).normalized;
     }
 
     static void AddLine(List<Vector3> path, Vector3 a, Vector3 b)
@@ -256,27 +368,6 @@ public class RoomSlotPlusPrompt : MonoBehaviour
             float a = Mathf.Lerp(a0, a1, t);
             path.Add(center + new Vector3(Mathf.Cos(a) * r, 0f, Mathf.Sin(a) * r));
         }
-    }
-
-    static void SamplePath(List<Vector3> path, float dist, out Vector3 pos, out Vector3 tan)
-    {
-        float remain = dist;
-        for (int i = 0; i < path.Count - 1; i++)
-        {
-            Vector3 d = path[i + 1] - path[i];
-            float len = d.magnitude;
-            if (len < 1e-5f)
-                continue;
-            if (remain <= len)
-            {
-                pos = path[i] + d * (remain / len);
-                tan = d / len;
-                return;
-            }
-            remain -= len;
-        }
-        pos = path[path.Count - 1];
-        tan = (path[path.Count - 1] - path[path.Count - 2]).normalized;
     }
 
     static void AddDashQuad(
@@ -307,6 +398,33 @@ public class RoomSlotPlusPrompt : MonoBehaviour
         indices.Add(i + 2);
     }
 
+    static void AddDisc(
+        List<Vector3> verts,
+        List<int> indices,
+        Vector3 center,
+        float radius,
+        int seg)
+    {
+        int c = verts.Count;
+        verts.Add(center);
+        for (int i = 0; i < seg; i++)
+        {
+            float a = i / (float)seg * Mathf.PI * 2f;
+            verts.Add(center + new Vector3(Mathf.Cos(a) * radius, 0f, Mathf.Sin(a) * radius));
+        }
+        for (int i = 0; i < seg; i++)
+        {
+            int i1 = c + 1 + i;
+            int i2 = c + 1 + ((i + 1) % seg);
+            indices.Add(c);
+            indices.Add(i1);
+            indices.Add(i2);
+            indices.Add(c);
+            indices.Add(i2);
+            indices.Add(i1);
+        }
+    }
+
     static float WorldPerPixel()
     {
         Camera cam = Camera.main;
@@ -325,7 +443,7 @@ public class RoomSlotPlusPrompt : MonoBehaviour
             ?? Shader.Find("Sprites/Default")
             ?? Shader.Find("Universal Render Pipeline/Unlit");
         Material mat = new Material(shader);
-        Color c = Color.white;
+        Color c = DashColor;
         if (mat.HasProperty("_BaseColor"))
             mat.SetColor("_BaseColor", c);
         if (mat.HasProperty("_Color"))

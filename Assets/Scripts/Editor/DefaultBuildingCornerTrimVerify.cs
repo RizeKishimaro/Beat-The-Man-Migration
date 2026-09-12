@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// DefaultBuilding corner-trim verify: envelope 0.7–7.3, no wall AABB overlap,
+/// DefaultBuilding corner-trim verify: envelope 0–6, no wall AABB overlap,
 /// doors still parented under hinges with upright local Y.
 /// Flag: Temp/default_building_corner_trim.flag
 /// Report: Temp/default_building_corner_trim.txt
@@ -133,9 +133,9 @@ public static class DefaultBuildingCornerTrimVerify
             Transform frontR = Find(named, "Wall_Front_Right");
 
             if (wallL != null)
-                fails += CheckAabb(sb, "Wall_Left", wallL, origin, 0.7f, 1.0f, 0f, 3f, 1.0f, 7.0f);
+                fails += CheckAabb(sb, "Wall_Left", wallL, origin, 0f, 0.3f, 0f, 3f, 0.3f, 5.7f);
             if (wallR != null)
-                fails += CheckAabb(sb, "Wall_Right", wallR, origin, 7.0f, 7.3f, 0f, 3f, 1.0f, 7.0f);
+                fails += CheckAabb(sb, "Wall_Right", wallR, origin, 5.7f, 6f, 0f, 3f, 0.3f, 5.7f);
 
             Bounds? env = Encapsulate(
                 wallL, wallR, wallB, frontL, frontR, Find(named, "Wall_Front_Lintel"));
@@ -151,10 +151,10 @@ public static class DefaultBuildingCornerTrimVerify
                 Vector3 max = e.max - origin;
                 sb.AppendLine($"envelope xz=({min.x:F3},{max.x:F3}) ({min.z:F3},{max.z:F3}) y=({min.y:F3},{max.y:F3})");
                 bool ok =
-                    Approx(min.x, 0.7f) && Approx(max.x, 7.3f) &&
-                    Approx(min.z, 0.7f) && Approx(max.z, 7.3f) &&
+                    Approx(min.x, 0f) && Approx(max.x, 6f) &&
+                    Approx(min.z, 0f) && Approx(max.z, 6f) &&
                     Approx(min.y, 0f) && Approx(max.y, 3f);
-                sb.AppendLine((ok ? "PASS" : "FAIL") + " envelope 0.7–7.3 / Y 0–3");
+                sb.AppendLine((ok ? "PASS" : "FAIL") + " envelope 0–6 / Y 0–3");
                 if (!ok) fails++;
             }
 

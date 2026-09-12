@@ -48,7 +48,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GridFootprint
   type: 2
-  sizeInCells: {x: 8, y: 8}
+  sizeInCells: {x: 6, y: 6}
 --- !u!114 &1730193847562910847
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -120,8 +120,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 6, y: 3, z: 6}
-  m_Center: {x: 4, y: 1.5, z: 4}
+  m_Size: {x: 5.4, y: 3, z: 5.4}
+  m_Center: {x: 3, y: 1.5, z: 3}
 --- !u!114 &6049927509691348776
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -203,11 +203,11 @@ PrefabInstance:
     - target: {fileID: -7202280286639856239, guid: 67af420b95170467a866154c875c0078, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 0ab7aa206a6e445784304433c29b62a6, type: 2}
+      objectReference: {fileID: 2100000, guid: 76bbbd3f25ac4cd1baf38d39c57cabd8, type: 2}
     - target: {fileID: -5558670996587786715, guid: 67af420b95170467a866154c875c0078, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 0ab7aa206a6e445784304433c29b62a6, type: 2}
+      objectReference: {fileID: 2100000, guid: 76bbbd3f25ac4cd1baf38d39c57cabd8, type: 2}
     - target: {fileID: -3938502899171980480, guid: 67af420b95170467a866154c875c0078, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -227,15 +227,19 @@ PrefabInstance:
     - target: {fileID: 5400553945470333140, guid: 67af420b95170467a866154c875c0078, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 0ab7aa206a6e445784304433c29b62a6, type: 2}
+      objectReference: {fileID: 2100000, guid: 76bbbd3f25ac4cd1baf38d39c57cabd8, type: 2}
+    - target: {fileID: 6642957156290723418, guid: 67af420b95170467a866154c875c0078, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6642957156290723418, guid: 67af420b95170467a866154c875c0078, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 0ab7aa206a6e445784304433c29b62a6, type: 2}
+      objectReference: {fileID: 2100000, guid: 76bbbd3f25ac4cd1baf38d39c57cabd8, type: 2}
     - target: {fileID: 7557552624186666160, guid: 67af420b95170467a866154c875c0078, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 0ab7aa206a6e445784304433c29b62a6, type: 2}
+      objectReference: {fileID: 2100000, guid: 76bbbd3f25ac4cd1baf38d39c57cabd8, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -352,8 +356,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 6.6000004, y: 3, z: 0.3000002}
-  m_Center: {x: 4, y: 1.5, z: 7.15}
+  m_Size: {x: 6, y: 3, z: 0.3000002}
+  m_Center: {x: 3, y: 1.5, z: 5.85}
 --- !u!64 &2841653342834494764
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -400,8 +404,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 6, y: 0.05, z: 6}
-  m_Center: {x: 4, y: 0.025, z: 4}
+  m_Size: {x: 5.3999996, y: 0.05, z: 5.3999996}
+  m_Center: {x: 3, y: 0.025, z: 3}
 --- !u!64 &3165795057210700911
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -453,8 +457,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2.3000002, y: 3, z: 0.29999995}
-  m_Center: {x: 6.15, y: 1.5, z: 0.85}
+  m_Size: {x: 2.25, y: 3, z: 0.3}
+  m_Center: {x: 4.875, y: 1.5, z: 0.15}
 --- !u!64 &1848793825497048466
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -501,8 +505,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.3000002, y: 3, z: 6}
-  m_Center: {x: 7.15, y: 1.5, z: 4}
+  m_Size: {x: 0.3000002, y: 3, z: 5.3999996}
+  m_Center: {x: 5.85, y: 1.5, z: 3}
 --- !u!64 &2751629087440904753
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -549,8 +553,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.29999995, y: 3, z: 6}
-  m_Center: {x: 0.85, y: 1.5, z: 4}
+  m_Size: {x: 0.3, y: 3, z: 5.3999996}
+  m_Center: {x: 0.15, y: 1.5, z: 3}
 --- !u!64 &5372979936665414232
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -644,8 +648,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2.3, y: 3, z: 0.29999995}
-  m_Center: {x: 1.85, y: 1.5, z: 0.85}
+  m_Size: {x: 2.25, y: 3, z: 0.3}
+  m_Center: {x: 1.125, y: 1.5, z: 0.15}
 --- !u!64 &612698729423174412
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -692,8 +696,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 6, y: 0.05000019, z: 6}
-  m_Center: {x: 4, y: 2.975, z: 4}
+  m_Size: {x: 5.3999996, y: 0.05000019, z: 5.3999996}
+  m_Center: {x: 3, y: 2.975, z: 3}
 --- !u!64 &3722665175162377365
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -740,8 +744,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2, y: 0.8000002, z: 0.29999995}
-  m_Center: {x: 4, y: 2.6, z: 0.85}
+  m_Size: {x: 1.5, y: 0.8000002, z: 0.3}
+  m_Center: {x: 3, y: 2.6, z: 0.15}
 --- !u!64 &5911243082012301763
 MeshCollider:
   m_ObjectHideFlags: 0

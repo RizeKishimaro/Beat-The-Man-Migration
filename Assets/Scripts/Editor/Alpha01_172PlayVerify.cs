@@ -225,8 +225,8 @@ public static class Alpha01_172PlayVerify
         Transform wallA = FindNamed(shared.transform, "Wall_Shared_A");
         Check(d.name + " shared piece", wallA != null);
         float boundary = d.dx != 0
-            ? Mathf.Min(sAnchor.x, neighbor.x) + 8f
-            : Mathf.Min(sAnchor.z, neighbor.z) + 8f;
+            ? Mathf.Min(sAnchor.x, neighbor.x) + 6f
+            : Mathf.Min(sAnchor.z, neighbor.z) + 6f;
         if (wallA != null)
         {
             float got = d.dx != 0 ? wallA.position.x : wallA.position.z;
@@ -282,17 +282,17 @@ public static class Alpha01_172PlayVerify
         RoomSlotAnchor.RoomLocalAabb(room, rend.bounds, out Vector3 min, out Vector3 max);
         sLog.AppendLine(label + " " + meshName + " local=" + min + " .. " + max);
         if (dx > 0)
-            Check(label + " " + meshName + " maxX", Mathf.Abs(max.x - 7.85f) < 0.05f);
+            Check(label + " " + meshName + " maxX", Mathf.Abs(max.x - 5.85f) < 0.05f);
         if (dx < 0)
             Check(label + " " + meshName + " minX", Mathf.Abs(min.x - 0.15f) < 0.05f);
         if (dz > 0)
-            Check(label + " " + meshName + " maxZ", Mathf.Abs(max.z - 7.85f) < 0.05f);
+            Check(label + " " + meshName + " maxZ", Mathf.Abs(max.z - 5.85f) < 0.05f);
         if (dz < 0)
             Check(label + " " + meshName + " minZ", Mathf.Abs(min.z - 0.15f) < 0.05f);
         if (dx != 0)
-            Check(label + " " + meshName + " Z not shrunk", Mathf.Abs((max.z - min.z) - 7.4f) < 0.15f);
+            Check(label + " " + meshName + " Z not shrunk", Mathf.Abs((max.z - min.z) - 5.4f) < 0.15f);
         if (dz != 0)
-            Check(label + " " + meshName + " X not shrunk", Mathf.Abs((max.x - min.x) - 7.4f) < 0.15f);
+            Check(label + " " + meshName + " X not shrunk", Mathf.Abs((max.x - min.x) - 5.4f) < 0.15f);
     }
 
     static bool Hidden(Transform room, string name)

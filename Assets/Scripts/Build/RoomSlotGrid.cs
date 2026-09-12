@@ -1,11 +1,11 @@
 using UnityEngine;
 
 /// <summary>
-/// Ticket 168/169 — 8×8 room slots on the existing 1m GridSystem (ticket 100).
+/// Ticket 168/169/179 — 6×6 room slots on the existing 1m GridSystem (ticket 100).
 /// </summary>
 public static class RoomSlotGrid
 {
-    public const int SlotCells = 8;
+    public const int SlotCells = 6;
 
     public static GridCoord SlotAnchorFromCell(GridCoord cell)
     {

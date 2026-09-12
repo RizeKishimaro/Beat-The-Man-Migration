@@ -1,46 +1,98 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 /// <summary>
-/// Ticket 168/169 — stub build menu. Confirm fires <see cref="PlacementConfirmed"/>.
-/// Open: E / South. Confirm: E / South / Default Building. Close: Esc / East / Close.
+/// Ticket 176 — per-player NEW ROOM drawer. Replaces the 168/169 stub popup.
+/// Confirm still fires <see cref="PlacementConfirmed"/> (DefaultBuilding).
+/// Open: E / South. Confirm: E / South / DefaultBuildingButton. Close: Esc / East / CloseButton.
 /// </summary>
 [DefaultExecutionOrder(50)]
 public class BuildMenuController : MonoBehaviour
 {
     public const string CanvasName = "BuildMenuCanvas";
+    public const float DrawerWidth = 486f;
+    public const float SlideDuration = 0.3f;
+    /// <summary>Figma wallpaper: 182px down-right / 10s ≈ 18.2px/s per axis (~26px/s diagonal).</summary>
+    public const float WallpaperPxPerSec = 18.2f;
+    public const float WallpaperTileW = 486f;
+    public const float WallpaperTileH = 909f;
 
-    /// <summary>169: spawn DefaultBuilding at this 8×8 slot anchor.</summary>
+    static readonly Color DrawerCyan = new Color(7f / 255f, 214f / 255f, 255f / 255f, 1f);
+
+    /// <summary>169: spawn DefaultBuilding at this 6×6 slot anchor.</summary>
     public static event System.Action<GridCoord> PlacementConfirmed;
 
     public static BuildMenuController Instance { get; private set; }
 
+    static readonly List<BuildMenuController> All = new List<BuildMenuController>(2);
+
+    [SerializeField] int playerIndex;
+    [SerializeField] bool fromRight;
+
+    public int PlayerIndex => playerIndex;
+    public bool FromRight => fromRight;
     public bool IsOpen { get; private set; }
     public GridCoord TargetSlot { get; private set; }
 
     Canvas canvas;
-    GameObject panel;
-    Text statusText;
+    RectTransform drawer;
+    RawImage wallpaper;
+    float slide;
+    float slideFrom;
+    float slideTo;
+    float slideT = 1f;
     int openedFrame = -1;
+    int confirmGen;
+    Vector2 wallpaperUv;
+
+    struct RoomDef
+    {
+        public string Title;
+        public string Price;
+        public string IconResource;
+    }
+
+    static readonly RoomDef[] Rooms =
+    {
+        new RoomDef { Title = "HR Dept", Price = "50,000cr", IconResource = "UI/NewRoom/IconHrDept" },
+        new RoomDef { Title = "Garage", Price = "100,000cr", IconResource = "UI/NewRoom/IconGarage" },
+        new RoomDef { Title = "Design Studio", Price = "150,000cr", IconResource = "UI/NewRoom/IconDesignStudio" },
+        new RoomDef { Title = "Fabrication Room", Price = "150,000cr", IconResource = "UI/NewRoom/IconFabrication" },
+    };
+
+    void OnEnable()
+    {
+        if (!All.Contains(this))
+            All.Add(this);
+        Instance = this;
+    }
+
+    void OnDisable()
+    {
+        All.Remove(this);
+        if (Instance == this)
+            Instance = All.Count > 0 ? All[0] : null;
+    }
 
     void Awake()
     {
         Instance = this;
         EnsureUi();
-        SetOpen(false);
-    }
-
-    void OnDestroy()
-    {
-        if (Instance == this)
-            Instance = null;
+        SetOpen(false, true);
     }
 
     void Update()
     {
+        TickSlide();
+        TickWallpaper();
         if (!IsOpen)
             return;
         if (Time.frameCount == openedFrame)
@@ -56,18 +108,26 @@ public class BuildMenuController : MonoBehaviour
         if ((kb != null && kb.eKey.wasPressedThisFrame)
             || (pad != null && pad.buttonSouth.wasPressedThisFrame))
         {
-            ConfirmDefaultBuilding();
-            return;
+            ConfirmPlacement();
         }
+    }
+
+    public static bool IsOpenForPlayer(int index)
+    {
+        for (int i = 0; i < All.Count; i++)
+        {
+            BuildMenuController m = All[i];
+            if (m != null && m.IsOpen && m.playerIndex == index)
+                return true;
+        }
+        return false;
     }
 
     public void Open(GridCoord slotAnchor)
     {
         EnsureUi();
         TargetSlot = slotAnchor;
-        if (statusText != null)
-            statusText.text = "Slot " + slotAnchor;
-        SetOpen(true);
+        SetOpen(true, false);
         openedFrame = Time.frameCount;
         if (EventSystem.current != null)
             EventSystem.current.SetSelectedGameObject(null);
@@ -75,20 +135,101 @@ public class BuildMenuController : MonoBehaviour
 
     public void Close()
     {
-        SetOpen(false);
+        confirmGen++;
+        SetOpen(false, false);
     }
 
-    void ConfirmDefaultBuilding()
+    void ConfirmPlacement()
     {
+        confirmGen++;
         PlacementConfirmed?.Invoke(TargetSlot);
         Close();
     }
 
-    void SetOpen(bool open)
+    void OnPanelChosen(RoomPanelView panel)
+    {
+        if (panel == null || !IsOpen)
+            return;
+        StartCoroutine(ConfirmAfterSelect());
+    }
+
+    IEnumerator ConfirmAfterSelect()
+    {
+        int gen = ++confirmGen;
+        yield return new WaitForSecondsRealtime(0.85f);
+        if (gen != confirmGen || !IsOpen)
+            yield break;
+        ConfirmPlacement();
+    }
+
+    void SetOpen(bool open, bool instant)
     {
         IsOpen = open;
-        if (canvas != null)
-            canvas.gameObject.SetActive(open);
+        if (canvas == null)
+            return;
+        if (open)
+        {
+            canvas.gameObject.SetActive(true);
+            RoomPanelView[] panels = canvas.GetComponentsInChildren<RoomPanelView>(true);
+            for (int i = 0; i < panels.Length; i++)
+                panels[i].ResetMotion();
+        }
+        slideFrom = slide;
+        slideTo = open ? 1f : 0f;
+        if (instant)
+        {
+            slide = slideTo;
+            slideT = 1f;
+            ApplySlide();
+            if (!open)
+                canvas.gameObject.SetActive(false);
+        }
+        else
+        {
+            slideT = 0f;
+            if (Mathf.Approximately(slideFrom, slideTo))
+                slideT = 1f;
+        }
+    }
+
+    void TickSlide()
+    {
+        if (canvas == null || slideT >= 1f)
+            return;
+        slideT = Mathf.Min(1f, slideT + Time.unscaledDeltaTime / SlideDuration);
+        float k = EaseOutCubic(slideT);
+        slide = Mathf.LerpUnclamped(slideFrom, slideTo, k);
+        ApplySlide();
+        if (slideT >= 1f && !IsOpen && canvas != null)
+            canvas.gameObject.SetActive(false);
+    }
+
+    void ApplySlide()
+    {
+        if (drawer == null)
+            return;
+        float hidden = fromRight ? DrawerWidth : -DrawerWidth;
+        float x = Mathf.Lerp(hidden, 0f, slide);
+        drawer.anchoredPosition = new Vector2(x, 0f);
+    }
+
+    static float EaseOutCubic(float t)
+    {
+        t = Mathf.Clamp01(t);
+        return 1f - Mathf.Pow(1f - t, 3f);
+    }
+
+    void TickWallpaper()
+    {
+        if (wallpaper == null || canvas == null || !canvas.isActiveAndEnabled)
+            return;
+        wallpaperUv.x -= WallpaperPxPerSec / WallpaperTileW * Time.unscaledDeltaTime;
+        wallpaperUv.y += WallpaperPxPerSec / WallpaperTileH * Time.unscaledDeltaTime;
+        float uSize = DrawerWidth / WallpaperTileW;
+        float vSize = drawer.rect.height / WallpaperTileH;
+        if (vSize < 0.01f)
+            vSize = 1080f / WallpaperTileH;
+        wallpaper.uvRect = new Rect(wallpaperUv.x, wallpaperUv.y, uSize, vSize);
     }
 
     void EnsureUi()
@@ -98,8 +239,6 @@ public class BuildMenuController : MonoBehaviour
 
         EnsureEventSystem();
 
-        Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-
         GameObject canvasGo = new GameObject(CanvasName);
         canvasGo.transform.SetParent(transform, false);
         canvas = canvasGo.AddComponent<Canvas>();
@@ -108,32 +247,111 @@ public class BuildMenuController : MonoBehaviour
         CanvasScaler scaler = canvasGo.AddComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = new Vector2(1920f, 1080f);
+        scaler.matchWidthOrHeight = 1f;
+        canvas.pixelPerfect = false;
         canvasGo.AddComponent<GraphicRaycaster>();
 
-        GameObject dim = CreateUi(canvasGo.transform, "Dim", Vector2.zero, Vector2.zero);
-        Stretch(dim.GetComponent<RectTransform>());
-        Image dimImg = dim.AddComponent<Image>();
-        dimImg.color = new Color(0f, 0f, 0f, 0.45f);
+        drawer = CreateUi(canvasGo.transform, "Drawer", Vector2.zero, new Vector2(DrawerWidth, 0f)).GetComponent<RectTransform>();
+        if (fromRight)
+        {
+            drawer.anchorMin = new Vector2(1f, 0f);
+            drawer.anchorMax = new Vector2(1f, 1f);
+            drawer.pivot = new Vector2(1f, 0.5f);
+        }
+        else
+        {
+            drawer.anchorMin = new Vector2(0f, 0f);
+            drawer.anchorMax = new Vector2(0f, 1f);
+            drawer.pivot = new Vector2(0f, 0.5f);
+        }
+        drawer.sizeDelta = new Vector2(DrawerWidth, 0f);
+        drawer.anchoredPosition = Vector2.zero;
 
-        panel = CreateUi(canvasGo.transform, "Panel", Vector2.zero, new Vector2(420f, 280f));
-        Image panelImg = panel.AddComponent<Image>();
-        panelImg.color = new Color(0.12f, 0.14f, 0.12f, 0.96f);
+        Image bg = drawer.gameObject.AddComponent<Image>();
+        bg.color = DrawerCyan;
+        bg.raycastTarget = true;
 
-        GameObject titleGo = CreateUi(panel.transform, "Title", new Vector2(0f, 90f), new Vector2(380f, 48f));
+        GameObject wallGo = CreateUi(drawer, "Wallpaper", Vector2.zero, Vector2.zero);
+        Stretch(wallGo.GetComponent<RectTransform>());
+        wallpaper = wallGo.AddComponent<RawImage>();
+        Texture2D tile = Resources.Load<Texture2D>("UI/NewRoom/WallpaperTile");
+#if UNITY_EDITOR
+        if (tile == null)
+            tile = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Resources/UI/NewRoom/WallpaperTile.png");
+#endif
+        if (tile != null)
+        {
+            tile.wrapMode = TextureWrapMode.Repeat;
+            tile.filterMode = FilterMode.Bilinear;
+            wallpaper.texture = tile;
+        }
+        wallpaper.color = Color.white;
+        wallpaper.raycastTarget = false;
+
+        GameObject titleGo = CreateUi(drawer, "Title", Vector2.zero, new Vector2(456f, 64f));
+        RectTransform titleRt = titleGo.GetComponent<RectTransform>();
+        titleRt.anchorMin = new Vector2(0f, 1f);
+        titleRt.anchorMax = new Vector2(0f, 1f);
+        titleRt.pivot = new Vector2(0f, 1f);
+        titleRt.anchoredPosition = new Vector2(20f, -35f);
+        titleRt.sizeDelta = new Vector2(912f, 128f);
+        titleRt.localScale = new Vector3(0.5f, 0.5f, 1f);
         Text title = titleGo.AddComponent<Text>();
-        ApplyText(title, font, "Build", 36);
+        title.font = NewRoomFonts.Title();
+        title.text = "NEW ROOM";
+        title.fontSize = 128;
+        title.color = RoomPanelView.Accent;
+        title.alignment = TextAnchor.MiddleLeft;
+        title.horizontalOverflow = HorizontalWrapMode.Overflow;
+        title.verticalOverflow = VerticalWrapMode.Overflow;
+        title.raycastTarget = false;
 
-        GameObject statusGo = CreateUi(panel.transform, "Status", new Vector2(0f, 48f), new Vector2(380f, 28f));
-        statusText = statusGo.AddComponent<Text>();
-        ApplyText(statusText, font, "", 18);
+        GameObject listGo = CreateUi(drawer, "RoomList", Vector2.zero, new Vector2(448f, 714f));
+        RectTransform listRt = listGo.GetComponent<RectTransform>();
+        listRt.anchorMin = new Vector2(0f, 1f);
+        listRt.anchorMax = new Vector2(0f, 1f);
+        listRt.pivot = new Vector2(0f, 1f);
+        listRt.anchoredPosition = new Vector2(20f, -133f);
+        listRt.sizeDelta = new Vector2(448f, 780f);
+        var layout = listGo.AddComponent<VerticalLayoutGroup>();
+        layout.spacing = 34f;
+        layout.childAlignment = TextAnchor.UpperLeft;
+        layout.childControlWidth = false;
+        layout.childControlHeight = false;
+        layout.childForceExpandWidth = false;
+        layout.childForceExpandHeight = false;
 
-        GameObject placeBtn = CreateButton(panel.transform, "DefaultBuildingButton",
-            "Default Building", new Vector2(0f, -10f), new Vector2(320f, 56f), font);
-        placeBtn.GetComponent<Button>().onClick.AddListener(ConfirmDefaultBuilding);
+        for (int i = 0; i < Rooms.Length; i++)
+        {
+            Sprite icon = LoadIcon(Rooms[i].IconResource);
+            RoomPanelView.Create(listRt, Rooms[i].Title, Rooms[i].Price, icon, OnPanelChosen);
+        }
 
-        GameObject closeBtn = CreateButton(panel.transform, "CloseButton",
-            "Close", new Vector2(0f, -80f), new Vector2(200f, 44f), font);
+        GameObject placeBtn = CreateHiddenButton(canvasGo.transform, "DefaultBuildingButton");
+        placeBtn.GetComponent<Button>().onClick.AddListener(ConfirmPlacement);
+
+        GameObject closeBtn = CreateHiddenButton(canvasGo.transform, "CloseButton");
         closeBtn.GetComponent<Button>().onClick.AddListener(Close);
+    }
+
+    static Sprite LoadIcon(string resource)
+    {
+        Texture2D tex = Resources.Load<Texture2D>(resource);
+#if UNITY_EDITOR
+        if (tex == null)
+            tex = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Resources/" + resource + ".png");
+#endif
+        if (tex == null)
+            return null;
+        tex.filterMode = FilterMode.Bilinear;
+        tex.wrapMode = TextureWrapMode.Clamp;
+        return Sprite.Create(
+            tex,
+            new Rect(0f, 0f, tex.width, tex.height),
+            new Vector2(0.5f, 0.5f),
+            100f,
+            0,
+            SpriteMeshType.FullRect);
     }
 
     static void EnsureEventSystem()
@@ -163,35 +381,17 @@ public class BuildMenuController : MonoBehaviour
         rt.offsetMax = Vector2.zero;
     }
 
-    static GameObject CreateButton(Transform parent, string name, string label, Vector2 pos, Vector2 size, Font font)
+    static GameObject CreateHiddenButton(Transform parent, string name)
     {
-        GameObject go = CreateUi(parent, name, pos, size);
+        GameObject go = CreateUi(parent, name, new Vector2(8f, -8f), new Vector2(4f, 4f));
+        RectTransform rt = go.GetComponent<RectTransform>();
+        rt.anchorMin = new Vector2(0f, 1f);
+        rt.anchorMax = new Vector2(0f, 1f);
+        rt.pivot = new Vector2(0f, 1f);
         Image img = go.AddComponent<Image>();
-        img.color = new Color(0.28f, 0.42f, 0.26f, 1f);
-        Button btn = go.AddComponent<Button>();
-        ColorBlock colors = btn.colors;
-        colors.highlightedColor = new Color(0.38f, 0.55f, 0.34f, 1f);
-        colors.pressedColor = new Color(0.20f, 0.32f, 0.18f, 1f);
-        btn.colors = colors;
-
-        GameObject textGo = CreateUi(go.transform, "Text", Vector2.zero, size);
-        Stretch(textGo.GetComponent<RectTransform>());
-        Text text = textGo.AddComponent<Text>();
-        ApplyText(text, font, label, 24);
-        text.raycastTarget = false;
+        img.color = Color.clear;
+        img.raycastTarget = false;
+        go.AddComponent<Button>();
         return go;
-    }
-
-    static void ApplyText(Text text, Font font, string value, int size)
-    {
-        if (font != null)
-            text.font = font;
-        text.text = value;
-        text.fontSize = size;
-        text.alignment = TextAnchor.MiddleCenter;
-        text.color = Color.white;
-        text.horizontalOverflow = HorizontalWrapMode.Overflow;
-        text.verticalOverflow = VerticalWrapMode.Overflow;
-        text.raycastTarget = false;
     }
 }

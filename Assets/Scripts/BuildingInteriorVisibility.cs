@@ -12,6 +12,10 @@ using UnityEngine;
 /// (URP Lit, no MPB/strip) regardless of camera angle or inside/outside state.
 /// Floor stays full; roof hides; doors are never touched.
 ///
+/// WallBasesOnly (default on): every wall is the 0.3m base, inside and outside.
+/// Tools/Buildings/Walls: Full restores 117. Tools/Buildings/Walls: Bases Only
+/// turns this back on.
+///
 /// Architecture: ONE mesh per wall. No *_SolidStrip cubes. No renderer disable
 /// for strip behavior (lintels fully discard via the same height clip).
 /// </summary>
@@ -34,6 +38,11 @@ public class BuildingInteriorVisibility : MonoBehaviour
     public Renderer[] floorRenderers;
     [Tooltip("Off: ceiling stays hidden (inside and outside). On: hide only while the player is inside (117).")]
     public bool showCeiling;
+
+    // Flip this (or Tools/Buildings/Walls: Full) to restore 117 outside/inside cutaway.
+    public static bool WallBasesOnly = true;
+
+    Renderer wallBack;
 
     [Header("Strip")]
     [Tooltip("URP Lit material for Wall_Back (outside strip system).")]
@@ -59,9 +68,11 @@ public class BuildingInteriorVisibility : MonoBehaviour
             interiorVolume = GetComponent<Collider>();
         ResolveMaterials();
         CacheBuildingBaseY();
+        CacheWallBack();
         ApplyWallBaseYToSharedMats();
         DestroyOrphanSolidStrips();
         ApplyWallMaterials();
+        ApplyVisibility();
     }
 
     void Start()
@@ -221,6 +232,14 @@ public class BuildingInteriorVisibility : MonoBehaviour
         SetEnabled(floorRenderers, true);
         SetEnabled(roofRenderers, showCeiling && !inside);
 
+        if (WallBasesOnly)
+        {
+            ApplyBasesOnly();
+            return;
+        }
+
+        RestoreWallBackLit();
+
         // alwaysVisibleWalls (Wall_Back, Wall_Left, Wall_Right) are never ApplyStripFlag'd.
 
         if (!inside)
@@ -278,6 +297,51 @@ public class BuildingInteriorVisibility : MonoBehaviour
     static bool IsFrontWallPiece(Renderer r)
     {
         return r != null && r.gameObject.name.StartsWith("Wall_Front");
+    }
+
+    static bool IsLintel(Renderer r)
+    {
+        return r != null && r.gameObject.name.Contains("Lintel");
+    }
+
+    void CacheWallBack()
+    {
+        wallBack = null;
+        Transform root = transform.parent != null ? transform.parent : transform;
+        Transform[] all = root.GetComponentsInChildren<Transform>(true);
+        for (int i = 0; i < all.Length; i++)
+        {
+            if (all[i] != null && all[i].name == "Wall_Back")
+            {
+                wallBack = all[i].GetComponent<Renderer>();
+                return;
+            }
+        }
+    }
+
+    void ApplyBasesOnly()
+    {
+        ApplyStripFlags(cullableWalls, strip: true);
+        if (cullableWalls != null)
+        {
+            for (int i = 0; i < cullableWalls.Length; i++)
+            {
+                if (IsLintel(cullableWalls[i]))
+                    cullableWalls[i].enabled = false;
+            }
+        }
+        if (wallBack != null)
+            ApplyStripFlag(wallBack, true);
+    }
+
+    void RestoreWallBackLit()
+    {
+        if (wallBack == null)
+            return;
+        wallBack.enabled = true;
+        wallBack.SetPropertyBlock(null);
+        if (wallLitMaterial != null)
+            wallBack.sharedMaterial = wallLitMaterial;
     }
 
     bool IsFacingCamera(Renderer r, Vector3 roomCenter)
@@ -367,6 +431,7 @@ public class BuildingInteriorVisibility : MonoBehaviour
     {
         ResolveMaterials();
         CacheBuildingBaseY();
+        CacheWallBack();
         ApplyWallBaseYToSharedMats();
         DestroyOrphanSolidStrips();
         ApplyWallMaterials();
@@ -380,6 +445,20 @@ public class BuildingInteriorVisibility : MonoBehaviour
             ApplyVisibility();
     }
 
+    [UnityEditor.MenuItem("Tools/Buildings/Walls: Bases Only")]
+    static void MenuWallsBasesOnly()
+    {
+        WallBasesOnly = true;
+        RefreshAllWalls();
+    }
+
+    [UnityEditor.MenuItem("Tools/Buildings/Walls: Full (117 cutaway)")]
+    static void MenuWallsFull()
+    {
+        WallBasesOnly = false;
+        RefreshAllWalls();
+    }
+
     [UnityEditor.MenuItem("Tools/Buildings/Show Ceilings")]
     static void MenuShowCeilings()
     {
@@ -390,6 +469,13 @@ public class BuildingInteriorVisibility : MonoBehaviour
     static void MenuHideCeilings()
     {
         SetAllCeilings(false);
+    }
+
+    static void RefreshAllWalls()
+    {
+        var all = FindObjectsByType<BuildingInteriorVisibility>(FindObjectsInactive.Include);
+        for (int i = 0; i < all.Length; i++)
+            all[i].ForceRefresh();
     }
 
     static void SetAllCeilings(bool show)

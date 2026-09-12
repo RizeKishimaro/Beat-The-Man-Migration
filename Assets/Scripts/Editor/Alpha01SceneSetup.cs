@@ -96,6 +96,11 @@ public static class Alpha01SceneSetup
             sb.AppendLine("FAIL missing " + CharacterPath);
             return sb.ToString();
         }
+        if (GameplayCameraPrefab.Load() == null)
+        {
+            sb.AppendLine("FAIL missing " + GameplayCameraPrefab.PrefabPath);
+            return sb.ToString();
+        }
 
         // If playground is dirty in memory, discard without saving it, then create Alpha01.
         Scene current = SceneManager.GetActiveScene();
@@ -137,29 +142,19 @@ public static class Alpha01SceneSetup
         player.AddComponent<ProceduralSeatJumpMotion>();
         sb.AppendLine("Player Character_Base assigned spawn=" + PlayerSpawn);
 
-        GameObject camGo = new GameObject("Main Camera");
-        SceneManager.MoveGameObjectToScene(camGo, scene);
-        camGo.tag = "MainCamera";
-        Camera cam = camGo.AddComponent<Camera>();
-        cam.orthographic = true;
-        cam.orthographicSize = 6f;
-        cam.clearFlags = CameraClearFlags.SolidColor;
-        cam.backgroundColor = new Color(0.19215687f, 0.3019608f, 0.4745098f, 0f);
-        camGo.AddComponent<AudioListener>();
-        var urp = camGo.AddComponent<UniversalAdditionalCameraData>();
-        urp.renderPostProcessing = true;
-        urp.renderShadows = true;
-        CameraFollow follow = camGo.AddComponent<CameraFollow>();
-        var cso = new SerializedObject(follow);
-        cso.FindProperty("target").objectReferenceValue = player.transform;
-        cso.FindProperty("offset").vector3Value = CamOffset;
-        cso.FindProperty("outdoorOrthographicSize").floatValue = 6f;
-        cso.FindProperty("interiorOrthographicSize").floatValue = 4.5f;
-        cso.FindProperty("roomTransitionDuration").floatValue = 0.3f;
-        cso.ApplyModifiedPropertiesWithoutUndo();
-        camGo.transform.position = PlayerSpawn + CamOffset;
-        camGo.transform.LookAt(player.transform);
-        sb.AppendLine("Main Camera + CameraFollow offset=" + CamOffset + " ortho=6");
+        GameObject camGo = GameplayCameraPrefab.InstantiateLookingAt(
+            scene,
+            PlayerSpawn + CamOffset,
+            player.transform.position,
+            player.transform,
+            enableFollow: true,
+            solidColorBackground: true);
+        if (camGo == null)
+        {
+            sb.AppendLine("FAIL Instantiate " + GameplayCameraPrefab.PrefabPath);
+            return sb.ToString();
+        }
+        sb.AppendLine("Main Camera prefab + CameraFollow offset=" + CamOffset + " ortho=6 SMAA High");
 
         GameObject lightGo = new GameObject("Directional Light");
         SceneManager.MoveGameObjectToScene(lightGo, scene);

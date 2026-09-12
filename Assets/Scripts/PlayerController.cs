@@ -18,6 +18,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float turnSpeed = 720f;
     [SerializeField] GameObject characterPrefab;
     [SerializeField] bool hidePlaceholderVisual = true;
+    [SerializeField] int playerIndex;
+
+    public int PlayerIndex => playerIndex;
 
     // CafeRoom sits near z=4.73 with its front door facing -Z.
     // Spawn clearly outside that entrance.
@@ -410,9 +413,11 @@ public class PlayerOverheadCarry : MonoBehaviour
         return 0.7f;
     }
 
-    static bool WasInteractPressed()
+    bool WasInteractPressed()
     {
-        if (BuildMenuController.Instance != null && BuildMenuController.Instance.IsOpen)
+        PlayerController pc = GetComponent<PlayerController>();
+        int idx = pc != null ? pc.PlayerIndex : 0;
+        if (BuildMenuController.IsOpenForPlayer(idx))
             return false;
         var prompt = Object.FindAnyObjectByType<RoomSlotPlusPrompt>();
         if (prompt != null && prompt.PromptVisible)

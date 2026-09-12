@@ -92,6 +92,12 @@ public static class GridFoundationSceneSetup
         EnsureFolders();
         GameObject prefab = EnsureGridSystemPrefab(sb);
         EnsureCrateHasGridFootprint(sb);
+        if (GameplayCameraPrefab.Load() == null)
+        {
+            sb.AppendLine("FAIL missing " + GameplayCameraPrefab.PrefabPath);
+            sb.AppendLine("RESULT=FAIL");
+            return sb.ToString();
+        }
 
         if (!batch && !EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
         {
@@ -193,7 +199,7 @@ public static class GridFoundationSceneSetup
             if (root == null)
                 continue;
             string n = root.name;
-            if (n == "GridSystem" || n == "Player" || n == "Main Camera"
+            if (n == "GridSystem" || n == "Player" || n == "Main Camera" || n == "MainCamera"
                 || n == "Directional Light" || n == "Item_Crate_Base"
                 || n == "WorldFloor" || n == "ItemCrateWorldSpawn")
             {
@@ -256,23 +262,15 @@ public static class GridFoundationSceneSetup
         }
         sb.AppendLine($"scene+=Item_Crate_Base at {cratePos} (cell 1,-2 corner)");
 
-        // Main Camera + follow
-        GameObject camGo = new GameObject("Main Camera");
-        SceneManager.MoveGameObjectToScene(camGo, scene);
-        camGo.tag = "MainCamera";
-        Camera cam = camGo.AddComponent<Camera>();
-        cam.orthographic = true;
-        cam.orthographicSize = 6f;
-        camGo.AddComponent<AudioListener>();
-        CameraFollow follow = camGo.AddComponent<CameraFollow>();
-        SerializedObject cso = new SerializedObject(follow);
-        cso.FindProperty("target").objectReferenceValue = player.transform;
-        cso.FindProperty("offset").vector3Value = new Vector3(-8f, 7f, -8f);
-        cso.FindProperty("orthographicSize").floatValue = 6f;
-        cso.ApplyModifiedPropertiesWithoutUndo();
-        camGo.transform.position = player.transform.position + new Vector3(-8f, 7f, -8f);
-        camGo.transform.LookAt(player.transform);
-        sb.AppendLine("scene+=Main Camera + CameraFollow");
+        // Main Camera prefab + follow (ticket 120)
+        GameplayCameraPrefab.InstantiateLookingAt(
+            scene,
+            player.transform.position + new Vector3(-8f, 7f, -8f),
+            player.transform.position,
+            player.transform,
+            enableFollow: true,
+            solidColorBackground: false);
+        sb.AppendLine("scene+=Main Camera prefab + CameraFollow SMAA High");
 
         // Light
         GameObject lightGo = new GameObject("Directional Light");

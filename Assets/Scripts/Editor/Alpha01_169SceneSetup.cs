@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Ticket 169 — wire RoomPlacement on Alpha01 BuildPlacement, assign DefaultBuilding,
-/// add GridFootprint Building 8×8 on the prefab (classification only).
+/// add GridFootprint Building 6×6 on the prefab (classification only).
 /// Does not save GridFoundation. Does not pull wall meshes together.
 /// Flag: Temp/alpha01_169_setup.flag
 /// Report: Temp/alpha01_169/setup.txt

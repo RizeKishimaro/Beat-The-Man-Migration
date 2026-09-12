@@ -1,17 +1,14 @@
 """
-Ticket 117 / 122 — Default Building master atom.
+Ticket 117 / 122 / 179 — Default Building master atom.
 
 Grid-corner snap: root empty sits at the exterior min corner (0,0,0).
 
-Footprint
-  8x8 m  reserved grid footprint  (x/y 0..8)
-  0.3 m  wall ring, inner face flush to the interior edge  (x/y 0.7..7.3)
-  6x6 m  interior clear space     (x/y 1..7)
-  0.7 m  leftover toward the outer edge = future exterior-decor margin
-
-Ticket 122 — EVEN WALLS: outer picture-frame is 6.6 m (W_MIN..W_MAX).
-Do NOT stretch walls to the 8 m exterior — the 0.7 m margin stays for
-future exterior decor.
+Ticket 179 — shell IS the placement tile (supersedes the 2026-09-10 8×8 lock):
+  6.0 m  exterior TOTAL footprint (x/y 0..6)
+  0.3 m  walls
+  5.4 m  interior clear space     (x/y 0.3..5.7)
+  3.0 m  tall
+  1.5 m  door (2×0.75 m leaves), centred on min-Y (Unity -Z)
 
 Corner trim: Front/Back own the 0.3×0.3 corner columns. Left/Right are
 trimmed to INT_MIN..INT_MAX on Y so adjacent boxes meet at an edge (no
@@ -28,8 +25,8 @@ Export NATIVE Blender Z-up and let Unity bake the conversion:
     Unity importer: bakeAxisConversion=True, importCameras/Lights=False,
                     animationType=None        (matches CafeRoom.fbx)
 
-That yields an IDENTITY root in Unity, the building at X[0.70, 7.30]
-Z[0.70, 7.30] Y[0, 3], and the door facing -Z. No yaw compensation needed.
+That yields an IDENTITY root in Unity, the building at X[0, 6]
+Z[0, 6] Y[0, 3], and the door facing -Z. No yaw compensation needed.
 
 This matters beyond placement: ShopDoorLeaf rotates the hinge about its LOCAL
 Y and uses transform.forward as the door normal, so the hinge must import with
@@ -58,24 +55,26 @@ FBX_PATH = os.path.join(_REPO_ROOT, "Assets", "Art", "Buildings", "DefaultBuildi
 EXPORT_FBX = "--export-fbx" in sys.argv or os.environ.get("DEFAULT_BUILDING_EXPORT_FBX") == "1"
 
 # --- Footprint (meters, Blender Z-up, X right, Y forward) ---
-EXT = 8.0
-INT_MIN, INT_MAX = 1.0, 7.0
+EXT = 6.0
+INT_MIN, INT_MAX = 0.3, 5.7
 WALL_T = 0.3
-W_MIN, W_MAX = INT_MIN - WALL_T, INT_MAX + WALL_T  # wall ring outer: 0.7 .. 7.3
+W_MIN, W_MAX = 0.0, EXT  # exterior IS the tile: 0 .. 6
 WALL_H = 3.0
 FLOOR_T = 0.05
 CEIL_T = 0.05
 
-# Ticket 122: 1.8 m centered (0.1 trimmed from each side of prior 2.0).
-DOOR_W = 1.8
+# Ticket 179: 1.5 m centred (2×0.75 m leaves).
+DOOR_W = 1.5
 DOOR_H = 2.2
 DOOR_X0 = EXT * 0.5 - DOOR_W * 0.5
 DOOR_X1 = EXT * 0.5 + DOOR_W * 0.5
 LEAF_T = 0.06
 
-F_OUT, F_IN = W_MIN, INT_MIN  # front wall (min Y -> Unity -Z): 0.7 .. 1.0
-B_IN, B_OUT = INT_MAX, W_MAX  # back wall:                      7.0 .. 7.3
-DOOR_Y = (F_OUT + F_IN) * 0.5  # 0.85 — door plane centred in wall thickness
+F_OUT, F_IN = W_MIN, INT_MIN  # front wall (min Y -> Unity -Z): 0.0 .. 0.3
+B_IN, B_OUT = INT_MAX, W_MAX  # back wall:                      5.7 .. 6.0
+DOOR_Y = (F_OUT + F_IN) * 0.5  # 0.15 — door plane centred in wall thickness
+LEAF_Y0 = DOOR_Y - LEAF_T * 0.5
+LEAF_Y1 = DOOR_Y + LEAF_T * 0.5
 
 
 def clear_scene():
@@ -141,17 +140,17 @@ def world_aabb(name):
 
 
 EXPECTED = {
-    "RoomFloor":         (1.0, 7.0, 1.0, 7.0, 0.0, 0.05),
-    "RoomCeiling":       (1.0, 7.0, 1.0, 7.0, 2.95, 3.0),
-    # Front/Back own corners (full 6.6 m). Left/Right trimmed on Y (6.0 m).
-    "Wall_Back":         (0.7, 7.3, 7.0, 7.3, 0.0, 3.0),
-    "Wall_Left":         (0.7, 1.0, 1.0, 7.0, 0.0, 3.0),
-    "Wall_Right":        (7.0, 7.3, 1.0, 7.0, 0.0, 3.0),
-    "Wall_Front_Left":   (0.7, DOOR_X0, 0.7, 1.0, 0.0, 3.0),
-    "Wall_Front_Right":  (DOOR_X1, 7.3, 0.7, 1.0, 0.0, 3.0),
-    "Wall_Front_Lintel": (DOOR_X0, DOOR_X1, 0.7, 1.0, DOOR_H, 3.0),
-    "DoorLeaf_Left":     (DOOR_X0, DOOR_X0 + DOOR_W * 0.5, 0.82, 0.88, 0.0, DOOR_H),
-    "DoorLeaf_Right":    (DOOR_X0 + DOOR_W * 0.5, DOOR_X1, 0.82, 0.88, 0.0, DOOR_H),
+    "RoomFloor":         (INT_MIN, INT_MAX, INT_MIN, INT_MAX, 0.0, FLOOR_T),
+    "RoomCeiling":       (INT_MIN, INT_MAX, INT_MIN, INT_MAX, WALL_H - CEIL_T, WALL_H),
+    # Front/Back own corners (full 6.0 m). Left/Right trimmed on Y (5.4 m).
+    "Wall_Back":         (W_MIN, W_MAX, B_IN, B_OUT, 0.0, WALL_H),
+    "Wall_Left":         (W_MIN, INT_MIN, INT_MIN, INT_MAX, 0.0, WALL_H),
+    "Wall_Right":        (INT_MAX, W_MAX, INT_MIN, INT_MAX, 0.0, WALL_H),
+    "Wall_Front_Left":   (W_MIN, DOOR_X0, F_OUT, F_IN, 0.0, WALL_H),
+    "Wall_Front_Right":  (DOOR_X1, W_MAX, F_OUT, F_IN, 0.0, WALL_H),
+    "Wall_Front_Lintel": (DOOR_X0, DOOR_X1, F_OUT, F_IN, DOOR_H, WALL_H),
+    "DoorLeaf_Left":     (DOOR_X0, DOOR_X0 + DOOR_W * 0.5, LEAF_Y0, LEAF_Y1, 0.0, DOOR_H),
+    "DoorLeaf_Right":    (DOOR_X0 + DOOR_W * 0.5, DOOR_X1, LEAF_Y0, LEAF_Y1, 0.0, DOOR_H),
 }
 
 
@@ -181,11 +180,11 @@ def verify():
     for wall in ("Wall_Back", "Wall_Left", "Wall_Right",
                  "Wall_Front_Left", "Wall_Front_Right", "Wall_Front_Lintel"):
         b = world_aabb(wall)
-        if b[0] < open_hi and b[1] > open_lo and b[2] < 0.999 and b[3] > 0.701 and b[4] < (DOOR_H - 0.001):
+        if b[0] < open_hi and b[1] > open_lo and b[2] < (F_IN - 0.001) and b[3] > (F_OUT + 0.001) and b[4] < (DOOR_H - 0.001):
             print("FAIL door opening blocked by", wall)
             failures.append(wall)
 
-    # Outer picture-frame still 6.6 m (Back X, Front span). Left/Right Y = 6.0 m.
+    # Outer picture-frame is the 6.0 m tile (Back X, Front span). Left/Right Y = 5.4 m.
     ring_len = round(W_MAX - W_MIN, 3)
     side_len = round(INT_MAX - INT_MIN, 3)
     for name, axis, exp in (("Wall_Back", "x", ring_len),

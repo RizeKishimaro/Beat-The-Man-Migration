@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// Ticket 173 — Play-mode isolated flush to 8×8 + neighbour shared wall.
+/// Ticket 173 — Play-mode isolated 6×6 shell + neighbour shared wall.
 /// CameraFollow stays ON. Does not save Alpha01 or GridFoundation.
 /// Flag: Temp/alpha01_173_play.flag
 /// Report: Temp/alpha01_173/play.txt
@@ -19,11 +19,11 @@ public static class Alpha01_173PlayVerify
     const string ShotDir = "Temp/alpha01_173";
     const string ScenePath = Alpha01SceneSetup.ScenePath;
     const string PendingKey = "Alpha01_173Play.pending";
-    const float Ext = 8f;
+    const float Ext = 6f;
     const float WallT = 0.3f;
     const float Inner = WallT;
     const float Outer = Ext - WallT;
-    const float DoorW = 1.8f;
+    const float DoorW = 1.5f;
     const float DoorH = 2.2f;
 
     static int sPhase;
@@ -236,11 +236,11 @@ public static class Alpha01_173PlayVerify
 
     static void CheckIsolated(Transform room, GridSystem grid)
     {
-        CheckFace(room, "Wall_Left", 0f, WallT, 0f, Ext, true);
-        CheckFace(room, "Wall_Right", Outer, Ext, 0f, Ext, true);
-        CheckFace(room, "Wall_Back", Inner, Outer, Outer, Ext, true);
-        CheckFace(room, "Wall_Front_Left", Inner, float.NaN, 0f, WallT, false);
-        CheckFace(room, "Wall_Front_Right", float.NaN, Outer, 0f, WallT, false);
+        CheckFace(room, "Wall_Left", 0f, WallT, Inner, Outer, true);
+        CheckFace(room, "Wall_Right", Outer, Ext, Inner, Outer, true);
+        CheckFace(room, "Wall_Back", 0f, Ext, Outer, Ext, true);
+        CheckFace(room, "Wall_Front_Left", 0f, float.NaN, 0f, WallT, false);
+        CheckFace(room, "Wall_Front_Right", float.NaN, Ext, 0f, WallT, false);
         CheckFace(room, "Wall_Front_Lintel", float.NaN, float.NaN, 0f, WallT, false);
 
         Transform fl = FindNamed(room, "Wall_Front_Left");
@@ -255,10 +255,10 @@ public static class Alpha01_173PlayVerify
             RoomSlotAnchor.RoomLocalAabb(room, frr.bounds, out Vector3 rmin, out Vector3 rmax);
             float hole = rmin.x - lmax.x;
             sLog.AppendLine("door hole x=" + hole + " leftMax=" + lmax.x + " rightMin=" + rmin.x);
-            Check("door width 1.8", Mathf.Abs(hole - DoorW) < 0.05f);
+            Check("door width 1.5", Mathf.Abs(hole - DoorW) < 0.05f);
         }
         else
-            Check("door width 1.8", false);
+            Check("door width 1.5", false);
         if (lr != null)
         {
             RoomSlotAnchor.RoomLocalAabb(room, lr.bounds, out Vector3 cmin, out Vector3 cmax);
@@ -278,12 +278,12 @@ public static class Alpha01_173PlayVerify
         else
         {
             sLog.AppendLine("interior size=" + interior.size + " center=" + interior.center);
-            Check("interior size xz 7.4",
-                Mathf.Abs(interior.size.x - 7.4f) < 0.05f
-                && Mathf.Abs(interior.size.z - 7.4f) < 0.05f);
-            Check("interior center xz 4",
-                Mathf.Abs(interior.center.x - 4f) < 0.05f
-                && Mathf.Abs(interior.center.z - 4f) < 0.05f);
+            Check("interior size xz 5.4",
+                Mathf.Abs(interior.size.x - 5.4f) < 0.05f
+                && Mathf.Abs(interior.size.z - 5.4f) < 0.05f);
+            Check("interior center xz 3",
+                Mathf.Abs(interior.center.x - 3f) < 0.05f
+                && Mathf.Abs(interior.center.z - 3f) < 0.05f);
         }
 
         CheckHinge(room, "DoorHinge_Left");
@@ -306,12 +306,12 @@ public static class Alpha01_173PlayVerify
         float dz1 = backR.bounds.max.z - (corner.z + Ext);
         sLog.AppendLine("slot corner=" + corner);
         sLog.AppendLine("dashed vs walls dx0=" + dx0 + " dx1=" + dx1 + " dz0=" + dz0 + " dz1=" + dz1);
-        Check("walls flush world 0/8",
+        Check("walls flush world 0/6",
             Mathf.Abs(dx0) < 0.05f && Mathf.Abs(dx1) < 0.05f
             && Mathf.Abs(dz0) < 0.05f && Mathf.Abs(dz1) < 0.05f);
         if (Mathf.Abs(dx0) >= 0.05f || Mathf.Abs(dx1) >= 0.05f
             || Mathf.Abs(dz0) >= 0.05f || Mathf.Abs(dz1) >= 0.05f)
-            sLog.AppendLine("OVERLAY OFFSET — dashed is CellToWorldCorner+8x8; do not guess-fix overlay");
+            sLog.AppendLine("OVERLAY OFFSET — dashed is CellToWorldCorner+6x6; do not guess-fix overlay");
     }
 
     static void CheckFace(
@@ -366,9 +366,9 @@ public static class Alpha01_173PlayVerify
         else if (dz == 0)
             Check(meshName + " maxZ isolated", Mathf.Abs(max.z - Outer) < 0.05f);
         if (dx != 0)
-            Check(meshName + " Z not shrunk", Mathf.Abs((max.z - min.z) - 7.4f) < 0.15f);
+            Check(meshName + " Z not shrunk", Mathf.Abs((max.z - min.z) - 5.4f) < 0.15f);
         if (dz != 0)
-            Check(meshName + " X not shrunk", Mathf.Abs((max.x - min.x) - 7.4f) < 0.15f);
+            Check(meshName + " X not shrunk", Mathf.Abs((max.x - min.x) - 5.4f) < 0.15f);
     }
 
     static void CheckHinge(Transform room, string name)

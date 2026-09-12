@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 13966, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: GameplayBasics
+  m_EditorClassIdentifier: UnityEditor.dll::UnityEditor.SceneTemplate.SceneTemplateAsset
+  templateScene: {fileID: 102900000, guid: 17955ace7eef34083af6f783f0c9a5e8, type: 3}
+  templateName: Gameplay Basics
+  description: 'Beat The Man: MainCamera.prefab (SMAA High + CameraFollow) + GridSystem.prefab
+    + directional light.'
+  preview: {fileID: 0}
+  dependencies:
+  - dependency: {fileID: 6696432299820956506, guid: 6e18cc30f76d7487e833106f50d1ed5d, type: 3}
+    instantiationMode: 1
+  - dependency: {fileID: 4957080789065663034, guid: b8c267b4f604e44428508507b482f12b, type: 3}
+    instantiationMode: 1
+  templatePipeline: {fileID: 0}
+  badge: {fileID: 0}
+  addToDefaults: 1

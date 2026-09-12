@@ -48,9 +48,10 @@ Shader "BeatTheMan/SlotPromptIcon"
 
             half4 frag(V2F i) : SV_Target
             {
-                half4 c = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv) * _Color;
-                clip(c.a - 0.05);
-                return c;
+                half4 tex = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv);
+                half a = tex.a * _Color.a;
+                clip(a - 0.05);
+                return half4(_Color.rgb, a);
             }
             ENDHLSL
         }

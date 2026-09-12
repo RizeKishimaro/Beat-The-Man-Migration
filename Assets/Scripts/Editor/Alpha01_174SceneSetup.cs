@@ -383,7 +383,7 @@ public static class Alpha01_174SceneSetup
     {
         PlayerController p = Object.FindAnyObjectByType<PlayerController>();
         if (p != null)
-            p.transform.position = new Vector3(4f, 0f, 4f);
+            p.transform.position = new Vector3(3f, 0f, 3f);
         Camera cam = Camera.main;
         if (cam == null)
         {

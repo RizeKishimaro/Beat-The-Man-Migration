@@ -1,13 +1,13 @@
 using UnityEngine;
 
 /// <summary>
-/// Ticket 172/173 — slot identity on DefaultBuilding.
-/// 173: flush every exterior wall to the 8×8 edge (keep 0.3m thickness).
+/// Ticket 172/173/179 — slot identity on DefaultBuilding.
+/// Isolated shell is authored at 6×6 (tile = exterior). No stretch-to-fill.
 /// Connected: trim floor / ceiling / perpendicular walls to the shared inner face.
 /// </summary>
 public class RoomSlotAnchor : MonoBehaviour
 {
-    public const float Ext = 8f;
+    public const float Ext = 6f;
     public const float WallT = 0.3f;
     public const float Half = WallT * 0.5f;
 
@@ -52,11 +52,7 @@ public class RoomSlotAnchor : MonoBehaviour
         Anchor = anchor;
         BuildingInteriorVisibility vis = GetComponentInChildren<BuildingInteriorVisibility>(true);
         Interior = vis != null ? vis.interiorVolume as BoxCollider : null;
-        if (!inited)
-        {
-            FlushToSlot();
-            inited = true;
-        }
+        inited = true;
         if (Interior != null)
         {
             OrigInteriorSize = Interior.size;
@@ -77,54 +73,6 @@ public class RoomSlotAnchor : MonoBehaviour
         StretchShell();
     }
 
-    void FlushToSlot()
-    {
-        float inner = WallT;
-        float outer = Ext - WallT;
-        FitXz("RoomFloor", inner, outer, inner, outer);
-        FitXz("RoomCeiling", inner, outer, inner, outer);
-
-        FitXzKeep("Wall_Front_Left", 0f, null, 0f, WallT);
-        FitXzKeep("Wall_Front_Right", null, Ext, 0f, WallT);
-        FitXzKeep("Wall_Front_Lintel", null, null, 0f, WallT);
-        FitXz("Wall_Back", 0f, Ext, outer, Ext);
-        FitXz("Wall_Left", 0f, WallT, inner, outer);
-        FitXz("Wall_Right", outer, Ext, inner, outer);
-
-        Vector3 hingeDelta = transform.TransformVector(new Vector3(0f, 0f, -0.7f));
-        MoveNamed("DoorHinge_Left", hingeDelta);
-        MoveNamed("DoorHinge_Right", hingeDelta);
-
-        if (Interior != null)
-        {
-            Vector3 size = Interior.size;
-            Vector3 center = Interior.center;
-            Interior.size = new Vector3(outer - inner, size.y, outer - inner);
-            Interior.center = new Vector3(Ext * 0.5f, center.y, Ext * 0.5f);
-        }
-    }
-
-    void FitXz(string name, float x0, float x1, float z0, float z1)
-    {
-        FitXzKeep(name, x0, x1, z0, z1);
-    }
-
-    void FitXzKeep(string name, float? x0, float? x1, float? z0, float? z1)
-    {
-        Transform t = FindNamed(transform, name);
-        if (t == null)
-            return;
-        Renderer rend = t.GetComponent<Renderer>();
-        if (rend == null)
-            return;
-        RoomLocalAabb(transform, rend.bounds, out Vector3 min, out Vector3 max);
-        if (x0.HasValue) min.x = x0.Value;
-        if (x1.HasValue) max.x = x1.Value;
-        if (z0.HasValue) min.z = z0.Value;
-        if (z1.HasValue) max.z = z1.Value;
-        ApplyLocalBox(t, rend, min, max);
-    }
-
     void ApplyLocalBox(Transform t, Renderer rend, Vector3 tgtMin, Vector3 tgtMax)
     {
         RoomLocalAabb(transform, rend.bounds, out Vector3 min, out Vector3 max);
@@ -143,18 +91,6 @@ public class RoomSlotAnchor : MonoBehaviour
         Vector3 curCenter = (curMin + curMax) * 0.5f;
         Vector3 tgtCenter = (tgtMin + tgtMax) * 0.5f;
         t.position += transform.TransformVector(tgtCenter - curCenter);
-    }
-
-    static void MoveNamed(Transform root, string name, Vector3 worldDelta)
-    {
-        Transform t = FindNamed(root, name);
-        if (t != null)
-            t.position += worldDelta;
-    }
-
-    void MoveNamed(string name, Vector3 worldDelta)
-    {
-        MoveNamed(transform, name, worldDelta);
     }
 
     void CacheMeshes()
@@ -218,13 +154,13 @@ public class RoomSlotAnchor : MonoBehaviour
     void ExpandFloor(ref Vector3 min, ref Vector3 max)
     {
         if ((ConnectedMask & RoomAdjacency.SidePosX) != 0)
-            max.x = Ext - Half;
+            max.x = Ext;
         if ((ConnectedMask & RoomAdjacency.SideNegX) != 0)
-            min.x = Half;
+            min.x = 0f;
         if ((ConnectedMask & RoomAdjacency.SidePosZ) != 0)
-            max.z = Ext - Half;
+            max.z = Ext;
         if ((ConnectedMask & RoomAdjacency.SideNegZ) != 0)
-            min.z = Half;
+            min.z = 0f;
     }
 
     void TrimWall(string name, ref Vector3 min, ref Vector3 max)

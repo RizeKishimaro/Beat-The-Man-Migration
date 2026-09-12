@@ -34,6 +34,23 @@ public class SharedWallVisibility : MonoBehaviour
 
         if (wallPieces == null)
             return;
+
+        if (BuildingInteriorVisibility.WallBasesOnly)
+        {
+            BuildingInteriorVisibility vis = roomA != null ? roomA : roomB;
+            for (int i = 0; i < wallPieces.Length; i++)
+            {
+                Renderer r = wallPieces[i];
+                if (r == null)
+                    continue;
+                if (r.gameObject.name.Contains("Lintel"))
+                    r.enabled = false;
+                else
+                    ApplyStripFlag(r, true, vis);
+            }
+            return;
+        }
+
         if (!inside)
         {
             for (int i = 0; i < wallPieces.Length; i++)

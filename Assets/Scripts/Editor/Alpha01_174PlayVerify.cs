@@ -8,7 +8,7 @@ using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// Ticket 174 — Play-mode look at empty 8×8 Alpha01 glossy floor.
+/// Ticket 174 — Play-mode look at empty 6×6 Alpha01 glossy floor.
 /// CameraFollow stays ON. Does not save Alpha01 or GridFoundation. Does not spawn rooms.
 /// Flag: Temp/alpha01_174_play.flag
 /// Report: Temp/alpha01_174/play.txt
@@ -58,14 +58,14 @@ public static class Alpha01_174PlayVerify
                 CharacterController cc = p.GetComponent<CharacterController>();
                 if (cc != null)
                     cc.enabled = false;
-                p.transform.position = new Vector3(4f, 0f, 4f);
+                p.transform.position = new Vector3(3f, 0f, 3f);
                 if (cc != null)
                     cc.enabled = true;
             }
             var overlay = Object.FindAnyObjectByType<GridOverlay>();
             if (overlay != null)
                 overlay.Visible = true;
-            sLog.AppendLine("warped player to 8x8 slot centre (4,0,4) grid overlay on");
+            sLog.AppendLine("warped player to 6x6 slot centre (3,0,3) grid overlay on");
             KeepFollowOn();
             FocusGameView();
             WriteReport();
@@ -172,14 +172,14 @@ public static class Alpha01_174PlayVerify
                 CharacterController cc = p.GetComponent<CharacterController>();
                 if (cc != null)
                     cc.enabled = false;
-                p.transform.position = new Vector3(4f, 0f, 4f);
+                p.transform.position = new Vector3(3f, 0f, 3f);
                 if (cc != null)
                     cc.enabled = true;
             }
             var overlay = Object.FindAnyObjectByType<GridOverlay>();
             if (overlay != null)
                 overlay.Visible = true;
-            sLog.AppendLine("warped player to 8x8 slot centre (4,0,4) grid overlay on");
+            sLog.AppendLine("warped player to 6x6 slot centre (3,0,3) grid overlay on");
             WriteReport();
         }
 

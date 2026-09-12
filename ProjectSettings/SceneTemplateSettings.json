@@ -1,5 +1,10 @@
 {
-    "templatePinStates": [],
+    "templatePinStates": [
+        {
+            "templateId": "f542ba566029f44bc9b9e1cf74e8e0dc",
+            "isPinned": true
+        }
+    ],
     "dependencyTypeInfos": [
         {
             "userAdded": false,

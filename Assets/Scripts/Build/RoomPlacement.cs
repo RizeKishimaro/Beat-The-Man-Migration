@@ -2,7 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// Ticket 169 — instantiate DefaultBuilding on <see cref="BuildMenuController.PlacementConfirmed"/>.
-/// Snaps to 168's 8×8 slot corner (137 flush/zero-gap unit). Occupies via GridSystem (100).
+/// Snaps to 168/179's 6×6 slot corner (137 flush/zero-gap unit). Occupies via GridSystem (100).
 /// Ticket 172 connects adjacent rooms at the boundary after occupy.
 /// </summary>
 [DefaultExecutionOrder(60)]

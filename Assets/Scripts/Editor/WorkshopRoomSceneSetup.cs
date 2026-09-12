@@ -44,7 +44,7 @@ public static class WorkshopRoomSceneSetup
     static readonly Vector2Int PlinthCells = new Vector2Int(2, 3);
     const float PlinthHeight = 0.5f;
 
-    // Interior is 6x6 cells. Centred across X (2 spare cells each side), and
+    // Interior is 5.4×5.4 m (ticket 179). Centred across X, and
     // set one cell off the door wall in Z, which is the -Z side of the shell.
     const int InsetFromDoorWallCells = 1;
 
