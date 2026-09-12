@@ -412,6 +412,12 @@ public class PlayerOverheadCarry : MonoBehaviour
 
     static bool WasInteractPressed()
     {
+        if (BuildMenuController.Instance != null && BuildMenuController.Instance.IsOpen)
+            return false;
+        var prompt = Object.FindAnyObjectByType<RoomSlotPlusPrompt>();
+        if (prompt != null && prompt.PromptVisible)
+            return false;
+
         Keyboard kb = Keyboard.current;
         if (kb != null && kb.eKey.wasPressedThisFrame)
             return true;

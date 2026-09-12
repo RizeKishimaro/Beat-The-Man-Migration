@@ -9,6 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1666404606403946920}
+  - component: {fileID: 659882686045632522}
+  - component: {fileID: 1730193847562910847}
   m_Layer: 0
   m_Name: DefaultBuilding
   m_TagString: Untagged
@@ -33,6 +35,39 @@ Transform:
   - {fileID: 2805994667890894103}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &659882686045632522
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4906552103146811894}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2d6818910d484fada0d1858a44ec52e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GridFootprint
+  type: 2
+  sizeInCells: {x: 8, y: 8}
+--- !u!114 &1730193847562910847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4906552103146811894}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e562438ca645b4a09bbfe7be904e73d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoomSlotAnchor
+  Anchor:
+    x: 0
+    z: 0
+  ConnectedMask: 0
+  OrigInteriorSize: {x: 0, y: 0, z: 0}
+  OrigInteriorCenter: {x: 0, y: 0, z: 0}
+  Interior: {fileID: 0}
 --- !u!1 &6935005929178453910
 GameObject:
   m_ObjectHideFlags: 0
@@ -111,6 +146,7 @@ MonoBehaviour:
   - {fileID: 7506933570531330492}
   floorRenderers:
   - {fileID: 2646087022522562034}
+  showCeiling: 0
   wallLitMaterial: {fileID: 2100000, guid: 1a5c1181232445108da6ba7a257b4719, type: 2}
   wallStripMaterial: {fileID: 2100000, guid: 0ab7aa206a6e445784304433c29b62a6, type: 2}
   wallStripOnMaterial: {fileID: 2100000, guid: 76bbbd3f25ac4cd1baf38d39c57cabd8, type: 2}
@@ -172,6 +208,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 0ab7aa206a6e445784304433c29b62a6, type: 2}
+    - target: {fileID: -3938502899171980480, guid: 67af420b95170467a866154c875c0078, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: -3938502899171980480, guid: 67af420b95170467a866154c875c0078, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 

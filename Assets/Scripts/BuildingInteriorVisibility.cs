@@ -32,6 +32,8 @@ public class BuildingInteriorVisibility : MonoBehaviour
     public Renderer[] cullableWalls;
     public Renderer[] roofRenderers;
     public Renderer[] floorRenderers;
+    [Tooltip("Off: ceiling stays hidden (inside and outside). On: hide only while the player is inside (117).")]
+    public bool showCeiling;
 
     [Header("Strip")]
     [Tooltip("URP Lit material for Wall_Back (outside strip system).")]
@@ -215,9 +217,9 @@ public class BuildingInteriorVisibility : MonoBehaviour
 
     void ApplyVisibility()
     {
-        // Floor always on. Roof toggles with inside (not a wall-strip concern).
+        // Floor always on. Roof toggles with inside unless showCeiling is off.
         SetEnabled(floorRenderers, true);
-        SetEnabled(roofRenderers, !inside);
+        SetEnabled(roofRenderers, showCeiling && !inside);
 
         // alwaysVisibleWalls (Wall_Back, Wall_Left, Wall_Right) are never ApplyStripFlag'd.
 
@@ -372,6 +374,34 @@ public class BuildingInteriorVisibility : MonoBehaviour
     }
 
 #if UNITY_EDITOR
+    void OnValidate()
+    {
+        if (Application.isPlaying)
+            ApplyVisibility();
+    }
+
+    [UnityEditor.MenuItem("Tools/Buildings/Show Ceilings")]
+    static void MenuShowCeilings()
+    {
+        SetAllCeilings(true);
+    }
+
+    [UnityEditor.MenuItem("Tools/Buildings/Hide Ceilings")]
+    static void MenuHideCeilings()
+    {
+        SetAllCeilings(false);
+    }
+
+    static void SetAllCeilings(bool show)
+    {
+        var all = FindObjectsByType<BuildingInteriorVisibility>(FindObjectsInactive.Include);
+        for (int i = 0; i < all.Length; i++)
+        {
+            all[i].showCeiling = show;
+            all[i].ApplyVisibility();
+        }
+    }
+
     public void EditorForceRefresh() => ForceRefresh();
 
     public void EditorSetInsideForTest(bool value)
