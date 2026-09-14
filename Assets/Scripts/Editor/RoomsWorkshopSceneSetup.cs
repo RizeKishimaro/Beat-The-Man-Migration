@@ -171,14 +171,8 @@ public static class RoomsWorkshopSceneSetup
             Camera cam = camGo.GetComponent<Camera>();
             sb.AppendLine("Main Camera prefab static, ortho=" + OrthoSize + " offset=" + CamOffset + " target=" + CamTarget + " (CameraFollow disabled)");
 
-            GameObject lightGo = new GameObject("Directional Light");
-            Light light = lightGo.AddComponent<Light>();
-            light.type = LightType.Directional;
-            light.color = new Color(1f, 0.97f, 0.92f);
-            light.intensity = 1.55f;
-            light.shadows = LightShadows.Soft;
-            lightGo.transform.rotation = Quaternion.Euler(50f, -30f, 0f);
-            lightGo.AddComponent<UniversalAdditionalLightData>();
+            // Ticket 106 — shared key + fill rig (was a lone key light).
+            GameplayLightingRig.CreateRig(scene, GameplayLightingRig.DefaultKeyIntensity, sb);
 
             // --- v1 reference: untouched DefaultBuilding prefab instance on tile 0..8 ---
             GameObject v1 = (GameObject)PrefabUtility.InstantiatePrefab(buildingPrefab, scene);

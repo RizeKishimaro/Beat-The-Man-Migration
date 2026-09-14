@@ -10,6 +10,8 @@ using UnityEngine.SceneManagement;
 /// Ticket 120 — editor-only guarantee that required scenes instance
 /// MainCamera.prefab (SMAA High) and GridSystem.prefab.
 /// Flag-driven bake sets Suspended so mid-convert opens do not false-fail.
+/// Ticket 182 — the same checks also run at build time via
+/// GameplaySceneBuildGuard, which calls RunChecks directly (no bypasses).
 /// </summary>
 [InitializeOnLoad]
 public static class GameplaySceneGuard
@@ -81,8 +83,25 @@ public static class GameplaySceneGuard
             return true;
         if (EditorApplication.isCompiling || EditorApplication.isUpdating)
             return true;
+        // Ticket 182: Play mode (like a player build) strips prefab connections, so the
+        // prefab-lineage checks false-fail there. The scene was already validated with
+        // links intact at ExitingEditMode (isPlaying still false then); the delayCall
+        // after the Play-mode domain reload must not re-run it.
+        if (EditorApplication.isPlaying)
+            return true;
         if (File.Exists(Path.GetFullPath(Path.Combine(Application.dataPath, "..", "Temp/alpha01_120.flag"))))
             return true;
+        return RunChecks(scene, log, sb);
+    }
+
+    /// <summary>
+    /// The checks themselves, with none of the editor-side bypasses in
+    /// ValidateScene. Ticket 182 — GameplaySceneBuildGuard uses this at build
+    /// time, where a suspended or mid-bake guard must never silently pass a
+    /// broken scene. Scenes outside RequiredScenePaths always pass.
+    /// </summary>
+    public static bool RunChecks(Scene scene, bool log, StringBuilder sb = null)
+    {
         if (!scene.IsValid() || !scene.isLoaded)
             return true;
         if (!IsRequiredScene(scene.path))

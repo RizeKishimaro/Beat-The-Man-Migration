@@ -327,16 +327,8 @@ public static class Alpha01_120BakeCameraGrid
         grid.name = "GridSystem";
         grid.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
 
-        GameObject lightGo = new GameObject("Directional Light");
-        SceneManager.MoveGameObjectToScene(lightGo, scene);
-        Light light = lightGo.AddComponent<Light>();
-        light.type = LightType.Directional;
-        light.color = new Color(1f, 0.97f, 0.92f);
-        light.intensity = 1.55f;
-        light.shadows = LightShadows.Soft;
-        lightGo.transform.rotation = Quaternion.Euler(50f, -30f, 0f);
-        if (lightGo.GetComponent<UniversalAdditionalLightData>() == null)
-            lightGo.AddComponent<UniversalAdditionalLightData>();
+        // Ticket 106 — shared key + fill rig (template used to carry a lone key light).
+        GameplayLightingRig.CreateRig(scene, GameplayLightingRig.DefaultKeyIntensity);
 
         EditorSceneManager.MarkSceneDirty(scene);
         bool saved = EditorSceneManager.SaveScene(scene, TemplateScenePath);

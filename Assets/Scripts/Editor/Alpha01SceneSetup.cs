@@ -156,17 +156,8 @@ public static class Alpha01SceneSetup
         }
         sb.AppendLine("Main Camera prefab + CameraFollow offset=" + CamOffset + " ortho=6 SMAA High");
 
-        GameObject lightGo = new GameObject("Directional Light");
-        SceneManager.MoveGameObjectToScene(lightGo, scene);
-        Light light = lightGo.AddComponent<Light>();
-        light.type = LightType.Directional;
-        light.color = new Color(1f, 0.97f, 0.92f);
-        light.intensity = 1.55f;
-        light.shadows = LightShadows.Soft;
-        lightGo.transform.rotation = Quaternion.Euler(50f, -30f, 0f);
-        if (lightGo.GetComponent<UniversalAdditionalLightData>() == null)
-            lightGo.AddComponent<UniversalAdditionalLightData>();
-        sb.AppendLine("Directional Light intensity=1.55 (playground values)");
+        // Ticket 106 — shared key + fill rig (was a lone key light at playground values).
+        GameplayLightingRig.CreateRig(scene, GameplayLightingRig.DefaultKeyIntensity, sb);
 
         // Jump-on target — same JumpOnSeatPoint + Seat child as playground, not CafeRoom.
         GameObject seatRoot = GameObject.CreatePrimitive(PrimitiveType.Cube);

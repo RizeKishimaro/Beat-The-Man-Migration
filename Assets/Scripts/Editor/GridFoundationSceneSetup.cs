@@ -272,14 +272,10 @@ public static class GridFoundationSceneSetup
             solidColorBackground: false);
         sb.AppendLine("scene+=Main Camera prefab + CameraFollow SMAA High");
 
-        // Light
-        GameObject lightGo = new GameObject("Directional Light");
-        SceneManager.MoveGameObjectToScene(lightGo, scene);
-        Light light = lightGo.AddComponent<Light>();
-        light.type = LightType.Directional;
-        light.intensity = 2f;
-        lightGo.transform.rotation = Quaternion.Euler(50f, -30f, 0f);
-        sb.AppendLine("scene+=Directional Light");
+        // Light — ticket 106 shared key + fill rig (matches what the 2026-08-05
+        // render-quality pass left in the saved scene; was a bare 2.0 key).
+        GameplayLightingRig.CreateRig(scene, GameplayLightingRig.DefaultKeyIntensity, sb);
+        sb.AppendLine("scene+=Directional Light + Fill Light");
 
         // Confirm GridAxisTestCube still present
         bool hasCube = false;
