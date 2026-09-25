@@ -139,7 +139,8 @@ public static class GameplaySceneGuard
                     Fail(ref fails, sb, log, scene, "Main Camera post-processing off");
             }
 
-            bool wantFollow = scene.path != "Assets/Scenes/RoomsWorkshop.unity";
+            bool wantFollow = scene.path != "Assets/Scenes/RoomsWorkshop.unity"
+                || SceneHasPlayer(scene);
             if (follow == null)
                 Fail(ref fails, sb, log, scene, "Main Camera missing CameraFollow");
             else if (follow.enabled != wantFollow)
@@ -214,6 +215,16 @@ public static class GameplaySceneGuard
                 return grids[i].gameObject;
         }
         return null;
+    }
+
+    static bool SceneHasPlayer(Scene scene)
+    {
+        foreach (GameObject root in scene.GetRootGameObjects())
+        {
+            if (root != null && root.GetComponentInChildren<PlayerController>(true) != null)
+                return true;
+        }
+        return false;
     }
 
     static void Fail(ref int fails, StringBuilder sb, bool log, Scene scene, string msg)

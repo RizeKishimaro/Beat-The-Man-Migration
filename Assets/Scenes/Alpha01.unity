@@ -915,7 +915,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2388cd9ff5a0149139a19eb328e196e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RoomPlacement
-  buildingPrefab: {fileID: 4906552103146811894, guid: 813a57e8f380b45d8a39ad530529c7bc, type: 3}
+  buildingPrefab: {fileID: 5015970843161528583, guid: 19b9eeebfa866433ea1151da68502979, type: 3}
 --- !u!1001 &2106398448
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -16,9 +16,9 @@ MonoBehaviour:
   folder: {fileID: 102900000, guid: 5dff00c8292e04660876d4d57027a90c, type: 3}
   kind: 0
   pickupable: 1
-  approved: 0
+  approved: 1
   exemptFromCellFitScaling: 0
-  prefabPath: 
+  prefabPath: Assets/Objects/Pickable/Meshy_AI_Tiny_Blue_Water_Coole_0901110901_texture_fbx/Meshy_AI_Tiny_Blue_Water_Coole_0901110901_texture_fbx.prefab
   weight: 0
   price: 0
   category: 

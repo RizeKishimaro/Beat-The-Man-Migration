@@ -7,20 +7,15 @@ using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// Ticket 178 — RoomsWorkshop comparison scene (https://trello.com/c/bCg5ZhlI).
-/// Creates Assets/Scenes/RoomsWorkshop.unity (ticket 137's disposable
-/// comparison scene) with one untouched DefaultBuilding (117) instance as the
-/// v1 reference and a 6x6 "HR Dept" test shell two cells to its right.
+/// Ticket 178 — RoomsWorkshop scene (https://trello.com/c/bCg5ZhlI).
+/// Ticket 182 superseded the cube comparison shell: a rebuild now places one
+/// DefaultBuilding instance named Room_HR at slot origin (empty HR shell).
+/// The 178 cube HRDept_Shell_6x6 is no longer created.
 ///
 /// The scene is built ADDITIVELY and then closed: whatever scene is open
 /// (Alpha01 while Cursor is in it) is never switched, saved or dirtied. The
 /// new scene is made active only for the duration of the build so transient
 /// objects never land in the previously active scene.
-///
-/// The shell is throwaway geometry — plain cube primitives, no prefab, no
-/// RoomSlotAnchor / GridFootprint / cutaway visibility. Only footprint and
-/// door proportion are under test. Ticket 179 made DefaultBuilding native 6×6
-/// (FlushToSlot removed), so the v1-flushed-to-8 baseline in this scene is stale.
 ///
 /// Flag: Temp/setup_rooms_workshop_178.flag
 /// </summary>
@@ -39,13 +34,10 @@ public static class RoomsWorkshopSceneSetup
     const string ShotTopDown = "Temp/rooms_workshop_178_topdown_v1flushed.png";
     const string ShotAsSaved = "Temp/rooms_workshop_178_angled_as_saved.png";
 
-    public const string V1Name = "DefaultBuilding_v1_ref";
+    public const string V1Name = "Room_HR";
     public const string V2Name = "HRDept_Shell_6x6";
 
-    // v1 sits on tile 0..8; v2 starts two cells to the right so the two shells
-    // read separately. Both door walls sit on the z=0 line.
     static readonly Vector3 V1Origin = Vector3.zero;
-    static readonly Vector3 V2Origin = new Vector3(10f, 0f, 0f);
 
     // v2 shell spec (ticket 178 plan, approved 2026-09-12).
     // 6.0m exterior wall-to-wall = "6 cells" the same way v1 reads as 8 in Play.
@@ -58,9 +50,9 @@ public static class RoomsWorkshopSceneSetup
     const float FloorT = 0.05f;        // same as v1's RoomFloor
 
     // Alpha01 camera (Alpha01SceneSetup): ortho 6, offset (-8,7,-8), looks at target.
-    // Target is the middle of the pair: v1 spans x 0..8, v2 spans x 10..16.
+    // Ticket 182: frame the single 6x6 HR shell (centre 3,0,3).
     static readonly Vector3 CamOffset = new Vector3(-8f, 7f, -8f);
-    static readonly Vector3 CamTarget = new Vector3(8f, 0f, 4f);
+    static readonly Vector3 CamTarget = new Vector3(3f, 0f, 3f);
     const float OrthoSize = 6f;
 
     static RoomsWorkshopSceneSetup()
@@ -174,16 +166,11 @@ public static class RoomsWorkshopSceneSetup
             // Ticket 106 — shared key + fill rig (was a lone key light).
             GameplayLightingRig.CreateRig(scene, GameplayLightingRig.DefaultKeyIntensity, sb);
 
-            // --- v1 reference: untouched DefaultBuilding prefab instance on tile 0..8 ---
+            // --- HR empty shell: DefaultBuilding prefab instance at slot origin ---
             GameObject v1 = (GameObject)PrefabUtility.InstantiatePrefab(buildingPrefab, scene);
             v1.name = V1Name;
             v1.transform.SetPositionAndRotation(V1Origin, Quaternion.identity);
-            sb.AppendLine($"{V1Name}: DefaultBuilding.prefab instance at {V1Origin} (tile 0..8)");
-
-            // --- v2: 6x6 HR Dept test shell, cube primitives only ---
-            GameObject v2 = BuildShell(wallMat, floorMat, doorMat);
-            v2.transform.SetPositionAndRotation(V2Origin, Quaternion.identity);
-            sb.AppendLine($"{V2Name}: cubes at {V2Origin} ext={Ext} wallT={WallT} wallH={WallH} doorW={DoorW} doorH={DoorH} (tile x 10..16, z 0..6)");
+            sb.AppendLine($"{V1Name}: DefaultBuilding.prefab instance at {V1Origin} (tile 0..6)");
 
             EditorSceneManager.MarkSceneDirty(scene);
             saved = EditorSceneManager.SaveScene(scene, ScenePath);
@@ -191,8 +178,7 @@ public static class RoomsWorkshopSceneSetup
             sb.AppendLine("saved=" + saved + " " + ScenePath);
 
             // --- Verification (edit mode; nothing below is saved) ---
-            AppendBounds(sb, "v1 as saved (raw FBX, edit mode)", v1);
-            AppendBounds(sb, "v2 as saved", v2);
+            AppendBounds(sb, "Room_HR as saved", v1);
             Screenshot(cam, Full(ShotAsSaved), 1920, 1080);
             sb.AppendLine("shot: " + ShotAsSaved);
 

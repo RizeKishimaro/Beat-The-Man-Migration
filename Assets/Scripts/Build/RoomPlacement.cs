@@ -1,14 +1,14 @@
 using UnityEngine;
 
 /// <summary>
-/// Ticket 169 — instantiate DefaultBuilding on <see cref="BuildMenuController.PlacementConfirmed"/>.
+/// Ticket 169 — instantiate Room_HR on <see cref="BuildMenuController.PlacementConfirmed"/>.
 /// Snaps to 168/179's 6×6 slot corner (137 flush/zero-gap unit). Occupies via GridSystem (100).
 /// Ticket 172 connects adjacent rooms at the boundary after occupy.
 /// </summary>
 [DefaultExecutionOrder(60)]
 public class RoomPlacement : MonoBehaviour
 {
-    public const string PrefabPath = "Assets/Prefabs/Buildings/DefaultBuilding.prefab";
+    public const string PrefabPath = "Assets/Prefabs/Buildings/Room_HR.prefab";
 
     public GameObject buildingPrefab;
 
